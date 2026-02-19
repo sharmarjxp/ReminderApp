@@ -2,29 +2,33 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Plus, Bell, BellOff, ArrowUp, ArrowDown, RotateCcw } from 'lucide-react';
+import { Plus, Bell, BellOff, ArrowUp, ArrowDown, RotateCcw, LogOut } from 'lucide-react';
 import TaskModal from '../components/TaskModal';
 import RescheduleRangeModal from '../components/RescheduleRangeModal';
+import LoginPage from '../components/LoginPage';
 import TaskItem from '../components/TaskItem';
+import { useAuth } from '../components/AuthProvider';
 import { getTasks, addTask, updateTask, deleteTask, rescheduleToNextDay, rescheduleAllOverdue, rescheduleByDateRange, isTaskOverdue } from '../lib/store';
 import useNotifications from '../hooks/useNotifications';
 import { format, isToday, isTomorrow, parseISO, addDays } from 'date-fns';
 import { cn } from '../lib/utils';
 
 export default function Home() {
+  const { session, signOut } = useAuth();
   const [tasks, setTasks] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortOrder, setSortOrder] = useState('asc'); // 'asc' or 'desc'
+  const [sortOrder, setSortOrder] = useState('asc');
 
   const [loading, setLoading] = useState(true);
 
   const { permission, requestPermission, triggerNotification } = useNotifications();
 
-  // Load tasks on mount
+  // Load tasks on mount — only when logged in
   useEffect(() => {
+    if (!session) return;
     const load = async () => {
       setLoading(true);
       const data = await getTasks();
@@ -32,10 +36,11 @@ export default function Home() {
       setLoading(false);
     };
     load();
-  }, []);
+  }, [session]);
 
-  // Check for reminders every minute
+  // Check for reminders every minute — only when logged in
   useEffect(() => {
+    if (!session) return;
     const interval = setInterval(async () => {
       const now = new Date();
       const currentFormattedDate = format(now, 'yyyy-MM-dd');
@@ -59,7 +64,7 @@ export default function Home() {
     }, 60000);
 
     return () => clearInterval(interval);
-  }, [tasks, triggerNotification]);
+  }, [session, tasks, triggerNotification]);
 
   const handleCreateTask = async (data) => {
     const newTask = await addTask(data);
@@ -145,6 +150,25 @@ export default function Home() {
     return groups;
   }, [filteredTasks]);
 
+  // ── Auth renders (after all hooks) ────────────────────────────
+  if (session === undefined) {
+    return (
+      <div style={{
+        minHeight: '100vh', display: 'flex', alignItems: 'center',
+        justifyContent: 'center', background: '#0f172a',
+      }}>
+        <div style={{
+          width: '40px', height: '40px', borderRadius: '50%',
+          border: '3px solid rgba(13,148,136,0.3)', borderTopColor: '#0d9488',
+          animation: 'spin 0.8s linear infinite',
+        }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
+  }
+
+  if (!session) return <LoginPage />;
+
   return (
     <main style={{ minHeight: '100vh', background: '#f8fafc', fontFamily: 'system-ui, sans-serif' }}>
 
@@ -209,16 +233,36 @@ export default function Home() {
             </p>
           </div>
 
-          {/* New Reminder Button */}
-          <button
-            onClick={() => { setEditingTask(null); setIsModalOpen(true); }}
-            className="new-reminder-btn"
-            onMouseEnter={e => e.currentTarget.style.background = '#0f766e'}
-            onMouseLeave={e => e.currentTarget.style.background = '#0d9488'}
-          >
-            <Plus size={18} />
-            New Reminder
-          </button>
+          {/* Right side actions */}
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            {/* New Reminder Button */}
+            <button
+              onClick={() => { setEditingTask(null); setIsModalOpen(true); }}
+              className="new-reminder-btn"
+              onMouseEnter={e => e.currentTarget.style.background = '#0f766e'}
+              onMouseLeave={e => e.currentTarget.style.background = '#0d9488'}
+            >
+              <Plus size={18} />
+              New Reminder
+            </button>
+            {/* Sign Out */}
+            <button
+              onClick={signOut}
+              title="Sign out"
+              style={{
+                display: 'flex', alignItems: 'center', gap: '6px',
+                background: 'transparent', color: '#94a3b8',
+                border: '1.5px solid #e2e8f0', borderRadius: '10px',
+                padding: '10px 14px', fontSize: '13px', fontWeight: 600,
+                cursor: 'pointer', transition: 'all 0.15s', whiteSpace: 'nowrap',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = '#ef4444'; e.currentTarget.style.color = '#ef4444'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#94a3b8'; }}
+            >
+              <LogOut size={15} />
+              <span className="sign-out-label">Sign Out</span>
+            </button>
+          </div>
         </div>
       </div>
 

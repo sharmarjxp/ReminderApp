@@ -4,8 +4,9 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Plus, Bell, BellOff, ArrowUp, ArrowDown, RotateCcw } from 'lucide-react';
 import TaskModal from '../components/TaskModal';
+import RescheduleRangeModal from '../components/RescheduleRangeModal';
 import TaskItem from '../components/TaskItem';
-import { getTasks, addTask, updateTask, deleteTask, rescheduleToNextDay, rescheduleAllOverdue, isTaskOverdue } from '../lib/store';
+import { getTasks, addTask, updateTask, deleteTask, rescheduleToNextDay, rescheduleAllOverdue, rescheduleByDateRange, isTaskOverdue } from '../lib/store';
 import useNotifications from '../hooks/useNotifications';
 import { format, isToday, isTomorrow, parseISO, addDays } from 'date-fns';
 import { cn } from '../lib/utils';
@@ -13,6 +14,7 @@ import { cn } from '../lib/utils';
 export default function Home() {
   const [tasks, setTasks] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState('asc'); // 'asc' or 'desc'
@@ -94,6 +96,12 @@ export default function Home() {
   // Reschedule ALL overdue / notified tasks to tomorrow
   const handleRescheduleAll = async () => {
     const updated = await rescheduleAllOverdue();
+    setTasks(updated);
+  };
+
+  // Reschedule overdue tasks in a date range to tomorrow
+  const handleRescheduleByRange = async (fromDate, toDate) => {
+    const updated = await rescheduleByDateRange(fromDate, toDate);
     setTasks(updated);
   };
 
@@ -276,7 +284,7 @@ export default function Home() {
           {/* Auto-Reschedule All — only shows when there are overdue tasks */}
           {overdueCount > 0 && (
             <button
-              onClick={handleRescheduleAll}
+              onClick={() => setIsRescheduleModalOpen(true)}
               style={{
                 display: 'flex', alignItems: 'center', gap: '8px',
                 background: '#fff7ed', color: '#c2410c',
@@ -286,7 +294,7 @@ export default function Home() {
                 boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
                 transition: 'all 0.15s',
               }}
-              title={`Reschedule all ${overdueCount} overdue reminder(s) to tomorrow`}
+              title={`Reschedule ${overdueCount} overdue reminder(s) to tomorrow`}
             >
               <RotateCcw size={15} />
               Reschedule All ({overdueCount})
@@ -355,6 +363,12 @@ export default function Home() {
         onSave={editingTask ? handleUpdateTask : handleCreateTask}
         taskToEdit={editingTask}
         onReschedule={handleRescheduleOne}
+      />
+      <RescheduleRangeModal
+        isOpen={isRescheduleModalOpen}
+        onClose={() => setIsRescheduleModalOpen(false)}
+        onSubmit={handleRescheduleByRange}
+        overdueCount={overdueCount}
       />
     </main>
   );

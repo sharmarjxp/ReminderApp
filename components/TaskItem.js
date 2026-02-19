@@ -6,6 +6,35 @@ import { Edit2, Trash2, RotateCcw, CalendarClock } from 'lucide-react';
 import { isTaskOverdue } from '../lib/store';
 import { format, addDays } from 'date-fns';
 
+// Splits text into plain strings and URL <a> tags
+const URL_REGEX = /(https?:\/\/[^\s]+)/g;
+function renderMessage(text, subColor) {
+    const parts = text.split(URL_REGEX);
+    return parts.map((part, i) => {
+        if (URL_REGEX.test(part)) {
+            return (
+                <a
+                    key={i}
+                    href={part}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={e => e.stopPropagation()}
+                    style={{
+                        color: '#93c5fd',
+                        textDecoration: 'underline',
+                        wordBreak: 'break-all',
+                        overflowWrap: 'anywhere',
+                        display: 'inline',
+                    }}
+                >
+                    {part}
+                </a>
+            );
+        }
+        return <span key={i}>{part}</span>;
+    });
+}
+
 export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onReschedule }) {
     const { hour, minute, ampm } = task.time;
     const displayMinute = (minute === 60 ? 0 : minute).toString().padStart(2, '0');
@@ -124,13 +153,17 @@ export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onR
                     </div>
                 </div>
 
-                {/* Message */}
+                {/* Message with clickable links */}
                 {task.message && (
-                    <p style={{
-                        fontSize: '12px', color: subColor, margin: 0, lineHeight: 1.4,
-                        wordBreak: 'break-all', overflowWrap: 'anywhere',
-                    }}>
-                        {task.message}
+                    <p
+                        onClick={e => e.stopPropagation()}
+                        style={{
+                            fontSize: '12px', color: subColor, margin: 0, lineHeight: 1.6,
+                            wordBreak: 'break-all', overflowWrap: 'anywhere',
+                            cursor: 'auto',
+                        }}
+                    >
+                        {renderMessage(task.message, subColor)}
                     </p>
                 )}
 

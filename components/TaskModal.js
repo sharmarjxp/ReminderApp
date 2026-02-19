@@ -280,7 +280,7 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit, onResch
                         <textarea
                             value={message}
                             onChange={e => setMessage(e.target.value)}
-                            placeholder="Add some context..."
+                            placeholder="Add some context or paste a link..."
                             rows={4}
                             className="modal-textarea"
                             style={{
@@ -291,6 +291,33 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit, onResch
                                 background: '#fff', minHeight: '100px',
                             }}
                         />
+                        {/* Live URL preview — appears when a link is detected in the message */}
+                        {(() => {
+                            const urls = message.match(/(https?:\/\/[^\s]+)/g);
+                            if (!urls) return null;
+                            return (
+                                <div style={{ padding: '8px 24px 12px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                    {urls.map((url, i) => (
+                                        <a
+                                            key={i}
+                                            href={url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{
+                                                display: 'flex', alignItems: 'center', gap: '8px',
+                                                background: '#eff6ff', color: '#1d4ed8',
+                                                border: '1px solid #bfdbfe', borderRadius: '8px',
+                                                padding: '7px 12px', fontSize: '12px', fontWeight: 600,
+                                                textDecoration: 'none', wordBreak: 'break-all',
+                                                cursor: 'pointer',
+                                            }}
+                                        >
+                                            🔗 {url.length > 60 ? url.slice(0, 60) + '...' : url}
+                                        </a>
+                                    ))}
+                                </div>
+                            );
+                        })()}
                     </div>
 
                 </div>

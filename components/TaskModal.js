@@ -51,6 +51,35 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit, onResch
 
     return (
         <>
+            {/* ── Responsive styles ── */}
+            <style>{`
+                .task-modal-panel {
+                    position: fixed;
+                    z-index: 9999;
+                    top: 16px;
+                    bottom: 16px;
+                    right: 16px;
+                    width: calc(50% - 16px);
+                    background: #ffffff;
+                    border-radius: 16px;
+                    box-shadow: 0 25px 60px rgba(0,0,0,0.35);
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                    border: 1px solid #e2e8f0;
+                }
+                @media (max-width: 640px) {
+                    .task-modal-panel {
+                        top: 0;
+                        bottom: 0;
+                        left: 0;
+                        right: 0;
+                        width: 100%;
+                        border-radius: 0;
+                    }
+                }
+            `}</style>
+
             {/* ── Backdrop ── */}
             <div
                 onClick={onClose}
@@ -66,21 +95,7 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit, onResch
             {/* ── Modal Panel ── */}
             <div
                 onClick={e => e.stopPropagation()}
-                style={{
-                    position: 'fixed',
-                    zIndex: 9999,
-                    top: '16px',
-                    bottom: '16px',
-                    right: '16px',
-                    width: 'calc(50% - 16px)',
-                    background: '#ffffff',
-                    borderRadius: '16px',
-                    boxShadow: '0 25px 60px rgba(0,0,0,0.35)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    overflow: 'hidden',
-                    border: '1px solid #e2e8f0',
-                }}
+                className="task-modal-panel"
             >
                 {/* Header */}
                 <div style={{

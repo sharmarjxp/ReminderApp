@@ -141,17 +141,49 @@ export default function Home() {
     <main style={{ minHeight: '100vh', background: '#f8fafc', fontFamily: 'system-ui, sans-serif' }}>
 
       {/* ── Top Nav Bar ── */}
+      <style>{`
+        .nav-inner {
+          max-width: 900px;
+          margin: 0 auto;
+          padding: 16px 32px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .new-reminder-btn {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          background: #0d9488;
+          color: #fff;
+          border: none;
+          border-radius: 12px;
+          padding: 12px 22px;
+          font-size: 14px;
+          font-weight: 700;
+          cursor: pointer;
+          letter-spacing: 0.02em;
+          box-shadow: 0 4px 12px rgba(13,148,136,0.35);
+          transition: all 0.15s;
+        }
+        @media (max-width: 640px) {
+          .nav-inner {
+            padding: 12px 16px;
+          }
+          .new-reminder-btn {
+            padding: 9px 14px;
+            font-size: 13px;
+            border-radius: 10px;
+          }
+        }
+      `}</style>
       <div style={{
         position: 'sticky', top: 0, zIndex: 10,
         background: '#ffffff',
         borderBottom: '1px solid #e2e8f0',
         boxShadow: '0 1px 8px rgba(0,0,0,0.06)',
       }}>
-        <div style={{
-          maxWidth: '900px', margin: '0 auto',
-          padding: '16px 32px',
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        }}>
+        <div className="nav-inner">
           {/* Brand */}
           <div>
             <h1 style={{
@@ -172,15 +204,7 @@ export default function Home() {
           {/* New Reminder Button */}
           <button
             onClick={() => { setEditingTask(null); setIsModalOpen(true); }}
-            style={{
-              display: 'flex', alignItems: 'center', gap: '8px',
-              background: '#0d9488', color: '#fff',
-              border: 'none', borderRadius: '12px',
-              padding: '12px 22px', fontSize: '14px', fontWeight: 700,
-              cursor: 'pointer', letterSpacing: '0.02em',
-              boxShadow: '0 4px 12px rgba(13,148,136,0.35)',
-              transition: 'all 0.15s',
-            }}
+            className="new-reminder-btn"
             onMouseEnter={e => e.currentTarget.style.background = '#0f766e'}
             onMouseLeave={e => e.currentTarget.style.background = '#0d9488'}
           >

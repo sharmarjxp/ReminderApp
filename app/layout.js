@@ -17,7 +17,6 @@ export const metadata = {
   title: "PiReminder — Tasks & Follow-ups",
   description: "Your personal reminder workspace",
   manifest: "/manifest.json",
-  themeColor: "#0d9488",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -30,6 +29,7 @@ export const viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  themeColor: "#0d9488",
 };
 
 export default function RootLayout({ children }) {

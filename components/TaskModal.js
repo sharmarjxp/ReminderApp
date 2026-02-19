@@ -77,6 +77,51 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit, onResch
                         width: 100%;
                         border-radius: 0;
                     }
+                    /* Header */
+                    .modal-header {
+                        padding: 11px 16px !important;
+                    }
+                    .modal-header h2 {
+                        font-size: 15px !important;
+                    }
+                    .modal-header p {
+                        font-size: 9px !important;
+                        margin-top: 2px !important;
+                    }
+                    /* Section labels */
+                    .modal-section-label {
+                        padding: 7px 16px !important;
+                        font-size: 10px !important;
+                    }
+                    /* Text / date inputs */
+                    .modal-input {
+                        padding: 10px 16px !important;
+                        font-size: 14px !important;
+                    }
+                    /* Time picker wrapper */
+                    .modal-time-wrap {
+                        padding: 12px 16px !important;
+                    }
+                    /* Textarea */
+                    .modal-textarea {
+                        padding: 10px 16px !important;
+                        font-size: 13px !important;
+                        min-height: 72px !important;
+                    }
+                    /* Footer */
+                    .modal-footer {
+                        padding: 10px 14px !important;
+                        gap: 8px !important;
+                    }
+                    .modal-btn-save,
+                    .modal-btn-cancel {
+                        padding: 10px 12px !important;
+                        font-size: 12px !important;
+                    }
+                    .modal-btn-reschedule {
+                        padding: 9px 12px !important;
+                        font-size: 11px !important;
+                    }
                 }
             `}</style>
 
@@ -98,7 +143,7 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit, onResch
                 className="task-modal-panel"
             >
                 {/* Header */}
-                <div style={{
+                <div className="modal-header" style={{
                     background: '#0d9488',
                     padding: '16px 24px',
                     display: 'flex',
@@ -154,7 +199,7 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit, onResch
 
                     {/* ── Title ── */}
                     <div style={{ borderBottom: '1px solid #e2e8f0' }}>
-                        <label style={{
+                        <label className="modal-section-label" style={{
                             display: 'flex', alignItems: 'center', gap: '10px',
                             background: '#f8fafc', padding: '10px 24px',
                             borderBottom: '1px solid #f1f5f9',
@@ -168,6 +213,7 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit, onResch
                             value={title}
                             onChange={e => setTitle(e.target.value)}
                             placeholder="Task Title..."
+                            className="modal-input"
                             style={{
                                 width: '100%', boxSizing: 'border-box',
                                 border: 'none', outline: 'none',
@@ -180,7 +226,7 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit, onResch
 
                     {/* ── Date ── */}
                     <div style={{ borderBottom: '1px solid #e2e8f0' }}>
-                        <label style={{
+                        <label className="modal-section-label" style={{
                             display: 'flex', alignItems: 'center', gap: '10px',
                             background: '#f8fafc', padding: '10px 24px',
                             borderBottom: '1px solid #f1f5f9',
@@ -193,6 +239,7 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit, onResch
                             type="date"
                             value={date}
                             onChange={e => setDate(e.target.value)}
+                            className="modal-input"
                             style={{
                                 width: '100%', boxSizing: 'border-box',
                                 border: 'none', outline: 'none',
@@ -205,7 +252,7 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit, onResch
 
                     {/* ── Time ── */}
                     <div style={{ borderBottom: '1px solid #e2e8f0' }}>
-                        <label style={{
+                        <label className="modal-section-label" style={{
                             display: 'flex', alignItems: 'center', gap: '10px',
                             background: '#f8fafc', padding: '10px 24px',
                             borderBottom: '1px solid #f1f5f9',
@@ -214,14 +261,14 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit, onResch
                         }}>
                             <Clock size={13} color="#0d9488" /> Pick Time
                         </label>
-                        <div style={{ padding: '20px 24px' }}>
+                        <div className="modal-time-wrap" style={{ padding: '20px 24px' }}>
                             <TimePicker value={time} onChange={setTime} />
                         </div>
                     </div>
 
                     {/* ── Details ── */}
                     <div>
-                        <label style={{
+                        <label className="modal-section-label" style={{
                             display: 'flex', alignItems: 'center', gap: '10px',
                             background: '#f8fafc', padding: '10px 24px',
                             borderBottom: '1px solid #f1f5f9',
@@ -235,6 +282,7 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit, onResch
                             onChange={e => setMessage(e.target.value)}
                             placeholder="Add some context..."
                             rows={4}
+                            className="modal-textarea"
                             style={{
                                 width: '100%', boxSizing: 'border-box',
                                 border: 'none', outline: 'none', resize: 'vertical',
@@ -248,7 +296,7 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit, onResch
                 </div>
 
                 {/* Footer */}
-                <div style={{
+                <div className="modal-footer" style={{
                     display: 'flex', flexDirection: 'column', gap: '10px',
                     padding: '16px 20px',
                     borderTop: '1px solid #e2e8f0', background: '#f8fafc',
@@ -258,6 +306,7 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit, onResch
                     {isOverdue && onReschedule && (
                         <button
                             onClick={handleRescheduleClick}
+                            className="modal-btn-reschedule"
                             style={{
                                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
                                 background: '#fff7ed', color: '#c2410c',
@@ -275,6 +324,7 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit, onResch
                     <div style={{ display: 'flex', gap: '12px' }}>
                         <button
                             onClick={handleSave}
+                            className="modal-btn-save"
                             style={{
                                 flex: 1, display: 'flex', alignItems: 'center',
                                 justifyContent: 'center', gap: '10px',
@@ -293,6 +343,7 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit, onResch
                         </button>
                         <button
                             onClick={onClose}
+                            className="modal-btn-cancel"
                             style={{
                                 flex: 1, background: '#fff', color: '#64748b',
                                 border: '1px solid #e2e8f0', borderRadius: '10px',

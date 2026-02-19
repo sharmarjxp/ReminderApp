@@ -107,8 +107,8 @@ export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onR
                         <button
                             onClick={() => onDelete(task.id)}
                             style={{
-                                background: 'rgba(239,68,68,0.1)', color: '#ef4444',
-                                border: '1px solid rgba(239,68,68,0.2)', borderRadius: '8px',
+                                background: 'rgba(255,255,255,0.15)', color: isOverdue || isCompleted ? '#64748b' : '#fff',
+                                border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px',
                                 padding: '4px 7px', cursor: 'pointer',
                                 display: 'flex', alignItems: 'center',
                             }}

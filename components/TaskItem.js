@@ -18,7 +18,7 @@ export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onR
     const cardBg = isCompleted ? '#f1f5f9' : isOverdue ? '#fef2f2' : '#00897B';
     const cardBorder = isCompleted ? '#cbd5e1' : isOverdue ? '#fca5a5' : '#00796B';
     const titleColor = isCompleted ? '#94a3b8' : isOverdue ? '#dc2626' : '#ffffff';
-    const timeColor = isOverdue ? '#dc2626' : isCompleted ? '#94a3b8' : '#ef4444';
+    const timeColor = isOverdue ? '#dc2626' : isCompleted ? '#94a3b8' : '#1e293b';
     const subColor = isCompleted ? '#94a3b8' : isOverdue ? '#ef4444' : 'rgba(255,255,255,0.75)';
 
     const tomorrow = format(addDays(new Date(), 1), 'MMM d');

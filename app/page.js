@@ -360,26 +360,6 @@ export default function Home() {
             {permission === 'granted' ? 'Alerts On' : 'Enable Alerts'}
           </button>
 
-          {/* Test Notification — only when permission is granted */}
-          {permission === 'granted' && (
-            <button
-              onClick={() => triggerNotification({ title: '🔔 PiReminder Test', message: 'Notifications are working!' })}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '8px',
-                background: '#eff6ff', color: '#1d4ed8',
-                border: '1.5px solid #bfdbfe', borderRadius: '12px',
-                padding: '11px 18px', fontSize: '13px', fontWeight: 600,
-                cursor: 'pointer', whiteSpace: 'nowrap',
-                boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
-                transition: 'all 0.15s',
-              }}
-              title="Tap to trigger a test notification right now"
-            >
-              <Bell size={15} />
-              Test Notification
-            </button>
-          )}
-
           {/* Auto-Reschedule All — only shows when there are overdue tasks */}
           {overdueCount > 0 && (
             <button

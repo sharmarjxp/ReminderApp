@@ -1,7 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "../components/AuthProvider";
-import { useEffect } from "react";
+import ServiceWorkerRegistrar from "../components/ServiceWorkerRegistrar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,7 +18,6 @@ export const metadata = {
   description: "Your personal reminder workspace",
   manifest: "/manifest.json",
   themeColor: "#0d9488",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -26,22 +25,14 @@ export const metadata = {
   },
 };
 
-export default function RootLayout({ children }) {
-  useEffect(() => {
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("/sw.js").then(
-          (registration) => {
-            console.log("Service Worker registered with scope:", registration.scope);
-          },
-          (err) => {
-            console.log("Service Worker registration failed:", err);
-          }
-        );
-      });
-    }
-  }, []);
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
 
+export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
@@ -55,6 +46,8 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AuthProvider>
+          {/* Registers the Service Worker — must be a Client Component */}
+          <ServiceWorkerRegistrar />
           {children}
         </AuthProvider>
       </body>

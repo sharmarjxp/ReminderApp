@@ -20,7 +20,7 @@ export default function useNotifications() {
         return res;
     }, []);
 
-    const triggerNotification = useCallback(({ title, message }) => {
+    const triggerNotification = useCallback(async ({ title, message }) => {
         if (typeof window === 'undefined') return;
 
         // Play Sound
@@ -28,12 +28,26 @@ export default function useNotifications() {
             audioRef.current.play().catch(e => console.log('Audio play failed:', e));
         }
 
-        // Show Notification
         if (Notification.permission === 'granted') {
-            new Notification(title, {
+            const options = {
                 body: message,
-                icon: '/favicon.ico', // Default icon
-            });
+                icon: '/favicon.ico',
+                badge: '/favicon.ico',
+                vibrate: [100, 50, 100],
+                data: {
+                    dateOfArrival: Date.now(),
+                    primaryKey: 1
+                }
+            };
+
+            // Preferred: Use Service Worker for better background support
+            if ('serviceWorker' in navigator) {
+                const registration = await navigator.serviceWorker.ready;
+                registration.showNotification(title, options);
+            } else {
+                // Fallback for Safari/others not fully supporting SW notifications
+                new Notification(title, options);
+            }
         } else {
             // Fallback alert
             alert(`REMINDER: ${title}\n${message}`);

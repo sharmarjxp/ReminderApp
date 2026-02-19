@@ -24,7 +24,11 @@ export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onR
     const tomorrow = format(addDays(new Date(), 1), 'MMM d');
 
     return (
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'stretch' }}>
+        <div style={{
+            display: 'flex', gap: '16px', alignItems: 'stretch',
+            minWidth: 0, overflow: 'hidden', width: '100%',
+            boxSizing: 'border-box'
+        }}>
 
             {/* Time Column */}
             <div style={{
@@ -52,11 +56,12 @@ export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onR
 
             {/* Card */}
             <div style={{
-                flex: 1, borderRadius: '12px', padding: '12px 14px',
+                flex: 1, minWidth: 0, borderRadius: '12px', padding: '12px 14px',
                 background: cardBg, border: `1.5px solid ${cardBorder}`,
                 boxShadow: isOverdue && !isCompleted ? '0 2px 12px rgba(220,38,38,0.15)' : '0 1px 4px rgba(0,0,0,0.08)',
                 cursor: 'pointer', transition: 'all 0.15s',
                 display: 'flex', flexDirection: 'column', gap: '6px',
+                overflow: 'hidden',
             }}
                 onClick={() => onEdit(task)}
             >
@@ -66,6 +71,7 @@ export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onR
                         fontSize: '15px', fontWeight: 700, color: titleColor,
                         textDecoration: isCompleted ? 'line-through' : 'none',
                         margin: 0, lineHeight: 1.3,
+                        wordBreak: 'break-word', overflowWrap: 'anywhere',
                     }}>
                         {task.title}
                     </h3>
@@ -120,7 +126,10 @@ export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onR
 
                 {/* Message */}
                 {task.message && (
-                    <p style={{ fontSize: '12px', color: subColor, margin: 0, lineHeight: 1.4 }}>
+                    <p style={{
+                        fontSize: '12px', color: subColor, margin: 0, lineHeight: 1.4,
+                        wordBreak: 'break-all', overflowWrap: 'anywhere',
+                    }}>
                         {task.message}
                     </p>
                 )}

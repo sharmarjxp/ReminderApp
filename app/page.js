@@ -170,7 +170,10 @@ export default function Home() {
   if (!session) return <LoginPage />;
 
   return (
-    <main style={{ minHeight: '100vh', background: '#f8fafc', fontFamily: 'system-ui, sans-serif' }}>
+    <main style={{
+      minHeight: '100vh', background: '#f8fafc',
+      fontFamily: 'system-ui, sans-serif', overflowX: 'hidden'
+    }}>
 
       {/* ── Top Nav Bar ── */}
       <style>{`
@@ -181,6 +184,24 @@ export default function Home() {
           display: flex;
           justify-content: space-between;
           align-items: center;
+        }
+        .brand-title {
+          font-size: 26px;
+          font-weight: 900;
+          color: #1e293b;
+          text-transform: uppercase;
+          font-style: italic;
+          letter-spacing: -0.03em;
+          margin: 0;
+          line-height: 1;
+        }
+        .brand-subtitle {
+          font-size: 10px;
+          font-weight: 600;
+          color: #94a3b8;
+          text-transform: uppercase;
+          letter-spacing: 0.2em;
+          margin-top: 4px;
         }
         .new-reminder-btn {
           display: flex;
@@ -198,14 +219,35 @@ export default function Home() {
           box-shadow: 0 4px 12px rgba(13,148,136,0.35);
           transition: all 0.15s;
         }
+        .controls-bar, .task-list-container {
+          max-width: 900px;
+          margin: 0 auto;
+          padding-left: 32px;
+          padding-right: 32px;
+        }
         @media (max-width: 640px) {
           .nav-inner {
-            padding: 12px 16px;
+            padding: 12px;
+            gap: 8px;
+          }
+          .brand-title {
+            font-size: 20px;
+          }
+          .brand-subtitle {
+            font-size: 9px;
+            letter-spacing: 0.1em;
           }
           .new-reminder-btn {
-            padding: 9px 14px;
-            font-size: 13px;
-            border-radius: 10px;
+            padding: 8px 12px;
+            font-size: 12px;
+            gap: 4px;
+          }
+          .sign-out-label {
+            display: none;
+          }
+          .controls-bar, .task-list-container {
+            padding-left: 12px;
+            padding-right: 12px;
           }
         }
       `}</style>
@@ -218,17 +260,10 @@ export default function Home() {
         <div className="nav-inner">
           {/* Brand */}
           <div>
-            <h1 style={{
-              fontSize: '26px', fontWeight: 900, color: '#1e293b',
-              textTransform: 'uppercase', fontStyle: 'italic',
-              letterSpacing: '-0.03em', margin: 0, lineHeight: 1,
-            }}>
+            <h1 className="brand-title">
               Pi<span style={{ color: '#0d9488' }}>Reminder</span>
             </h1>
-            <p style={{
-              fontSize: '10px', fontWeight: 600, color: '#94a3b8',
-              textTransform: 'uppercase', letterSpacing: '0.2em', marginTop: '4px',
-            }}>
+            <p className="brand-subtitle">
               Tasks &amp; Follow-ups
             </p>
           </div>
@@ -267,7 +302,7 @@ export default function Home() {
       </div>
 
       {/* ── Controls Bar ── */}
-      <div style={{ maxWidth: '900px', margin: '0 auto', padding: '20px 32px 8px' }}>
+      <div className="controls-bar" style={{ padding: '20px 0 8px' }}>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
 
           {/* Search */}
@@ -277,7 +312,7 @@ export default function Home() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
-              flex: 1, minWidth: '200px',
+              flex: 1, minWidth: '150px',
               background: '#fff', border: '1.5px solid #e2e8f0',
               borderRadius: '12px', padding: '11px 18px',
               fontSize: '14px', color: '#1e293b',
@@ -348,7 +383,7 @@ export default function Home() {
       </div>
 
       {/* ── Task List ── */}
-      <div style={{ maxWidth: '900px', margin: '0 auto', padding: '16px 32px 80px' }}>
+      <div className="task-list-container" style={{ padding: '16px 0 80px' }}>
         {Object.entries(groupedTasks).map(([dateLabel, tasks]) => (
           <section key={dateLabel} style={{ marginBottom: '28px' }}>
             <h2 style={{

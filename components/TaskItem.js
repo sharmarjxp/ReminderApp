@@ -97,7 +97,7 @@ export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onR
                 {/* Title row */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
                     <h3 style={{
-                        fontSize: '15px', fontWeight: 700, color: titleColor,
+                        fontSize: '22px', fontWeight: 400, color: titleColor,
                         textDecoration: isCompleted ? 'line-through' : 'none',
                         margin: 0, lineHeight: 1.3,
                         wordBreak: 'break-word', overflowWrap: 'anywhere',

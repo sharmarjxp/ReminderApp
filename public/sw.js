@@ -23,6 +23,8 @@ self.addEventListener('push', (event) => {
         badge: '/favicon.ico',
         vibrate: [100, 50, 100],
         requireInteraction: false,
+        tag: data.id,
+        renotify: true,
         data: { url: '/' },
     };
 

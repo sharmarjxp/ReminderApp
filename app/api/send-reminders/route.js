@@ -69,17 +69,17 @@ export async function GET(request) {
             sub.timezone || 'UTC'
         );
 
-        // 2. Fetch incomplete, unnotified tasks for this user that match today's date
+        // 2. Fetch incomplete, unnotified tasks that match today's date
+        // Note: Filters by date but NOT user_id as the existing schema lacks user_id
         const { data: tasks, error: taskError } = await adminSupabase
             .from('tasks')
             .select('*')
-            .eq('user_id', sub.user_id)
             .eq('date', localDate)
             .eq('completed', false)
             .eq('notified', false);
 
         if (taskError) {
-            console.error(`[send-reminders] Task fetch error for user ${sub.user_id}:`, taskError);
+            console.error(`[send-reminders] Task fetch error:`, taskError);
             continue;
         }
 
@@ -99,6 +99,7 @@ export async function GET(request) {
         // 4. Send a push for each due task
         for (const task of dueTasks) {
             const payload = JSON.stringify({
+                id: task.id,
                 title: task.title,
                 message: task.message || 'Time to get it done!',
             });

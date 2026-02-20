@@ -99,7 +99,7 @@ export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onR
                     <h3 style={{
                         fontSize: '22px', fontWeight: 400, color: titleColor,
                         textDecoration: isCompleted ? 'line-through' : 'none',
-                        margin: 0, lineHeight: 1.3,
+                        margin: 0, lineHeight: 1,
                         wordBreak: 'break-word', overflowWrap: 'anywhere',
                     }}>
                         {task.title}

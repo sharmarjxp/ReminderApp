@@ -227,27 +227,27 @@ export default function Home() {
         }
         @media (max-width: 640px) {
           .nav-inner {
-            padding: 12px;
-            gap: 8px;
+            padding: 10px 8px;
+            gap: 6px;
           }
           .brand-title {
-            font-size: 20px;
+            font-size: 19px;
           }
           .brand-subtitle {
-            font-size: 9px;
+            font-size: 8.5px;
             letter-spacing: 0.1em;
           }
           .new-reminder-btn {
-            padding: 8px 12px;
-            font-size: 12px;
-            gap: 4px;
+            padding: 7px 10px;
+            font-size: 11.5px;
+            gap: 3px;
           }
           .sign-out-label {
             display: none;
           }
           .controls-bar, .task-list-container {
-            padding-left: 12px;
-            padding-right: 12px;
+            padding-left: 8px;
+            padding-right: 8px;
           }
         }
       `}</style>

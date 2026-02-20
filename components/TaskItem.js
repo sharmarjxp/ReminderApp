@@ -53,30 +53,38 @@ export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onR
     const tomorrow = format(addDays(new Date(), 1), 'MMM d');
 
     return (
-        <div style={{
-            display: 'flex', gap: '16px', alignItems: 'stretch',
+        <div className="task-item-row" style={{
+            display: 'flex', gap: '8px', alignItems: 'stretch',
             minWidth: 0, overflow: 'hidden', width: '100%',
             boxSizing: 'border-box'
         }}>
+            <style>{`
+                @media (max-width: 480px) {
+                    .time-column { min-width: 58px !important; }
+                    .task-card { padding: 10px 12px !important; gap: 4px !important; }
+                    .task-title { font-size: 17px !important; }
+                    .task-message { font-size: 11.5px !important; line-height: 1.4 !important; }
+                }
+            `}</style>
 
             {/* Time Column */}
-            <div style={{
+            <div className="time-column" style={{
                 display: 'flex', flexDirection: 'column',
-                alignItems: 'flex-end', minWidth: '72px',
-                paddingTop: '10px',
+                alignItems: 'flex-end', minWidth: '70px',
+                paddingTop: '8px', flexShrink: 0
             }}>
-                <span style={{ fontSize: '17px', fontWeight: 900, color: timeColor, lineHeight: 1 }}>
+                <span style={{ fontSize: '16px', fontWeight: 900, color: timeColor, lineHeight: 1 }}>
                     {hour}:{displayMinute}
                 </span>
-                <span style={{ fontSize: '10px', fontWeight: 700, color: timeColor, textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '2px' }}>
+                <span style={{ fontSize: '10px', fontWeight: 700, color: timeColor, textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '1px' }}>
                     {ampm}
                 </span>
                 {isOverdue && !isCompleted && (
                     <span style={{
-                        marginTop: '6px', fontSize: '9px', fontWeight: 800,
+                        marginTop: '4px', fontSize: '8px', fontWeight: 800,
                         color: '#dc2626', textTransform: 'uppercase',
-                        letterSpacing: '0.05em', background: '#fee2e2',
-                        borderRadius: '4px', padding: '2px 5px',
+                        letterSpacing: '0.04em', background: '#fee2e2',
+                        borderRadius: '4px', padding: '1px 4px',
                     }}>
                         OVERDUE
                     </span>
@@ -84,81 +92,75 @@ export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onR
             </div>
 
             {/* Card */}
-            <div style={{
-                flex: 1, minWidth: 0, borderRadius: '12px', padding: '12px 14px',
+            <div className="task-card" style={{
+                flex: 1, minWidth: 0, borderRadius: '12px', padding: '11px 13px',
                 background: cardBg, border: `1.5px solid ${cardBorder}`,
-                boxShadow: isOverdue && !isCompleted ? '0 2px 12px rgba(220,38,38,0.15)' : '0 1px 4px rgba(0,0,0,0.08)',
+                boxShadow: isOverdue && !isCompleted ? '0 2px 10px rgba(220,38,38,0.12)' : '0 1px 3px rgba(0,0,0,0.06)',
                 cursor: 'pointer', transition: 'all 0.15s',
-                display: 'flex', flexDirection: 'column', gap: '6px',
+                display: 'flex', flexDirection: 'column', gap: '5px',
                 overflow: 'hidden',
             }}
                 onClick={() => onEdit(task)}
             >
                 {/* Title row */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
-                    <h3 style={{
-                        fontSize: '22px', fontWeight: 400, color: titleColor,
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '6px' }}>
+                    <h3 className="task-title" style={{
+                        fontSize: '20px', fontWeight: 500, color: titleColor,
                         textDecoration: isCompleted ? 'line-through' : 'none',
-                        margin: 0, lineHeight: 1.1,
+                        margin: 0, lineHeight: 1.15,
                         wordBreak: 'break-word', overflowWrap: 'anywhere',
                     }}>
                         {task.title}
                     </h3>
 
-                    {/* Action buttons — stop propagation so clicking the card doesn't open modal */}
-                    <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }} onClick={e => e.stopPropagation()}>
-
-                        {/* Auto-reschedule individual */}
+                    {/* Action buttons */}
+                    <div style={{ display: 'flex', gap: '3px', flexShrink: 0 }} onClick={e => e.stopPropagation()}>
                         {isOverdue && !isCompleted && (
                             <button
                                 onClick={() => onReschedule(task.id)}
                                 title={`Reschedule to ${tomorrow}`}
                                 style={{
-                                    display: 'flex', alignItems: 'center', gap: '4px',
+                                    display: 'flex', alignItems: 'center', gap: '3px',
                                     background: 'rgba(220,38,38,0.1)', color: '#dc2626',
-                                    border: '1px solid rgba(220,38,38,0.3)', borderRadius: '8px',
-                                    padding: '4px 8px', fontSize: '11px', fontWeight: 700,
+                                    border: '1px solid rgba(220,38,38,0.25)', borderRadius: '6px',
+                                    padding: '3px 6px', fontSize: '10px', fontWeight: 700,
                                     cursor: 'pointer', whiteSpace: 'nowrap',
                                 }}
                             >
-                                <RotateCcw size={11} /> Tomorrow
+                                <RotateCcw size={10} /> Tomorrow
                             </button>
                         )}
-
-                        {/* Edit */}
                         <button
                             onClick={() => onEdit(task)}
                             style={{
                                 background: 'rgba(255,255,255,0.15)', color: isOverdue || isCompleted ? '#64748b' : '#fff',
-                                border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px',
-                                padding: '4px 7px', cursor: 'pointer',
+                                border: '1px solid rgba(255,255,255,0.2)', borderRadius: '6px',
+                                padding: '3px 6px', cursor: 'pointer',
                                 display: 'flex', alignItems: 'center',
                             }}
                         >
-                            <Edit2 size={12} />
+                            <Edit2 size={11} />
                         </button>
-
-                        {/* Delete */}
                         <button
                             onClick={() => onDelete(task.id)}
                             style={{
                                 background: 'rgba(255,255,255,0.15)', color: isOverdue || isCompleted ? '#64748b' : '#fff',
-                                border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px',
-                                padding: '4px 7px', cursor: 'pointer',
+                                border: '1px solid rgba(255,255,255,0.2)', borderRadius: '6px',
+                                padding: '3px 6px', cursor: 'pointer',
                                 display: 'flex', alignItems: 'center',
                             }}
                         >
-                            <Trash2 size={12} />
+                            <Trash2 size={11} />
                         </button>
                     </div>
                 </div>
 
-                {/* Message with clickable links */}
+                {/* Message */}
                 {task.message && (
-                    <p
+                    <p className="task-message"
                         onClick={e => e.stopPropagation()}
                         style={{
-                            fontSize: '12px', color: subColor, margin: 0, lineHeight: 1.6,
+                            fontSize: '12px', color: subColor, margin: 0, lineHeight: 1.5,
                             wordBreak: 'break-all', overflowWrap: 'anywhere',
                             cursor: 'auto',
                         }}
@@ -167,17 +169,17 @@ export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onR
                     </p>
                 )}
 
-                {/* Date badge */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '2px' }}>
-                    <CalendarClock size={11} color={subColor} />
-                    <span style={{ fontSize: '11px', fontWeight: 600, color: subColor }}>
+                {/* Footer */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '1px' }}>
+                    <CalendarClock size={10} color={subColor} />
+                    <span style={{ fontSize: '10px', fontWeight: 600, color: subColor }}>
                         {task.date}
                     </span>
                     {isCompleted && (
                         <span style={{
-                            fontSize: '9px', fontWeight: 800, color: '#22c55e',
+                            fontSize: '8px', fontWeight: 800, color: '#22c55e',
                             background: '#f0fdf4', border: '1px solid #86efac',
-                            borderRadius: '4px', padding: '1px 5px', marginLeft: '4px',
+                            borderRadius: '4px', padding: '0px 4px', marginLeft: '4px',
                         }}>DONE</span>
                     )}
                 </div>

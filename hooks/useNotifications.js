@@ -17,7 +17,7 @@ export default function useNotifications() {
     useEffect(() => {
         if (typeof window !== 'undefined') {
             setPermission(Notification.permission);
-            audioRef.current = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+            audioRef.current = new Audio('https://assets.mixkit.co/active_storage/sfx/951/951-preview.mp3');
         }
     }, []);
 

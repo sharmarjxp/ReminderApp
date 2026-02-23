@@ -368,7 +368,7 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit, onResch
                             }}
                         >
                             <RotateCcw size={15} />
-                            Reschedule to Tomorrow ({tomorrow})
+                            Reschedule (smart)
                         </button>
                     )}
 

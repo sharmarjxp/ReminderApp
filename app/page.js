@@ -1,14 +1,15 @@
 
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { Plus, Bell, BellOff, ArrowUp, ArrowDown, RotateCcw, LogOut } from 'lucide-react';
 import TaskModal from '../components/TaskModal';
 import RescheduleRangeModal from '../components/RescheduleRangeModal';
 import LoginPage from '../components/LoginPage';
 import TaskItem from '../components/TaskItem';
 import { useAuth } from '../components/AuthProvider';
-import { getTasks, addTask, updateTask, deleteTask, rescheduleToNextDay, rescheduleAllOverdue, rescheduleByDateRange, isTaskOverdue } from '../lib/store';
+import { getTasks, addTask, updateTask, deleteTask, rescheduleToNextDay, rescheduleAllOverdue, rescheduleByDateRange, adjustTaskDate, isTaskOverdue } from '../lib/store';
 import useNotifications from '../hooks/useNotifications';
 import { format, isToday, isTomorrow, parseISO, addDays } from 'date-fns';
 import { cn } from '../lib/utils';
@@ -104,6 +105,12 @@ export default function Home() {
     setTasks(updated);
   };
 
+  // Adjust a single task's date by ±N days
+  const handleAdjustDate = async (id, delta) => {
+    const updated = await adjustTaskDate(id, delta);
+    if (updated) setTasks(prev => prev.map(t => t.id === id ? updated : t));
+  };
+
   // Reschedule overdue tasks in a date range to tomorrow
   const handleRescheduleByRange = async (fromDate, toDate) => {
     const updated = await rescheduleByDateRange(fromDate, toDate);
@@ -149,6 +156,25 @@ export default function Home() {
     });
     return groups;
   }, [filteredTasks]);
+
+  // Flatten grouped tasks into virtual rows for windowed rendering
+  const virtualRows = useMemo(() => {
+    const rows = [];
+    Object.entries(groupedTasks).forEach(([label, tasksInGroup]) => {
+      rows.push({ type: 'header', label, count: tasksInGroup.length });
+      tasksInGroup.forEach(task => rows.push({ type: 'card', task }));
+    });
+    return rows;
+  }, [groupedTasks]);
+
+  // Virtualizer — must be declared before any early returns (Rules of Hooks)
+  const listRef = useRef(null);
+  const virtualizer = useVirtualizer({
+    count: virtualRows.length,
+    getScrollElement: () => listRef.current,
+    estimateSize: (i) => (virtualRows[i]?.type === 'header' ? 44 : 88),
+    overscan: 8,
+  });
 
   // ── Auth renders (after all hooks) ────────────────────────────
   if (session === undefined) {
@@ -379,32 +405,18 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── Task List ── */}
-      <div className="task-list-container" style={{ padding: '130px 0 80px' }}>
-        {Object.entries(groupedTasks).map(([dateLabel, tasks]) => (
-          <section key={dateLabel} style={{ marginBottom: '28px' }}>
-            <h2 style={{
-              fontSize: '15px', fontWeight: 500, color: '#2563eb',
-              textTransform: 'uppercase', letterSpacing: '0.1em',
-              marginBottom: '12px', paddingLeft: '4px',
-            }}>
-              {dateLabel}
-            </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {tasks.map(task => (
-                <TaskItem
-                  key={task.id}
-                  task={task}
-                  onEdit={(t) => { setEditingTask(t); setIsModalOpen(true); }}
-                  onDelete={handleDeleteTask}
-                  onToggleComplete={toggleComplete}
-                  onReschedule={handleRescheduleOne}
-                />
-              ))}
-            </div>
-          </section>
-        ))}
-
+      {/* ── Task List (virtualized) ── */}
+      <div
+        className="task-list-container"
+        ref={listRef}
+        style={{
+          paddingTop: '130px',
+          paddingBottom: '80px',
+          overflowY: 'auto',
+          height: '100vh',
+          position: 'relative',
+        }}
+      >
         {loading && (
           <div style={{ padding: '80px 0', textAlign: 'center' }}>
             <div style={{
@@ -429,6 +441,57 @@ export default function Home() {
             <p style={{ color: '#94a3b8', fontWeight: 600, fontStyle: 'italic' }}>
               No reminders yet. Hit &ldquo;New Reminder&rdquo; to get started!
             </p>
+          </div>
+        )}
+
+        {!loading && virtualRows.length > 0 && (
+          <div style={{ height: `${virtualizer.getTotalSize()}px`, position: 'relative' }}>
+            {virtualizer.getVirtualItems().map(vItem => {
+              const row = virtualRows[vItem.index];
+              return (
+                <div
+                  key={vItem.key}
+                  data-index={vItem.index}
+                  ref={virtualizer.measureElement}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    transform: `translateY(${vItem.start}px)`,
+                    paddingBottom: row.type === 'card' ? '10px' : '0px',
+                  }}
+                >
+                  {row.type === 'header' ? (
+                    <h2 style={{
+                      fontSize: '15px', fontWeight: 500, color: '#2563eb',
+                      textTransform: 'uppercase', letterSpacing: '0.1em',
+                      margin: '0 0 2px', paddingLeft: '4px',
+                      paddingTop: vItem.index === 0 ? '0' : '18px',
+                      display: 'flex', alignItems: 'center', gap: '8px',
+                    }}>
+                      {row.label}
+                      <span style={{
+                        fontSize: '12px', fontWeight: 600,
+                        background: '#eff6ff', color: '#3b82f6',
+                        border: '1px solid #bfdbfe',
+                        borderRadius: '20px', padding: '1px 8px',
+                        letterSpacing: '0.04em', textTransform: 'none',
+                      }}>{row.count}</span>
+                    </h2>
+                  ) : (
+                    <TaskItem
+                      task={row.task}
+                      onEdit={(t) => { setEditingTask(t); setIsModalOpen(true); }}
+                      onDelete={handleDeleteTask}
+                      onToggleComplete={toggleComplete}
+                      onReschedule={handleRescheduleOne}
+                      onAdjustDate={handleAdjustDate}
+                    />
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

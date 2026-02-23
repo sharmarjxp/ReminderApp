@@ -35,7 +35,7 @@ function renderMessage(text, subColor) {
     });
 }
 
-export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onReschedule }) {
+export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onReschedule, onAdjustDate }) {
     const { hour, minute, ampm } = task.time;
     const displayMinute = (minute === 60 ? 0 : minute).toString().padStart(2, '0');
     const timeStr = `${hour}:${displayMinute} ${ampm}`;
@@ -120,7 +120,7 @@ export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onR
                         {isOverdue && !isCompleted && (
                             <button
                                 onClick={() => onReschedule(task.id)}
-                                title={`Reschedule to ${tomorrow}`}
+                                title="Reschedule (today if time is future, else tomorrow)"
                                 style={{
                                     display: 'flex', alignItems: 'center', gap: '3px',
                                     background: 'rgba(239,68,68,0.08)', color: '#f87171',
@@ -129,9 +129,33 @@ export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onR
                                     cursor: 'pointer', whiteSpace: 'nowrap',
                                 }}
                             >
-                                <RotateCcw size={10} /> Tomorrow
+                                <RotateCcw size={10} /> Reschedule
                             </button>
                         )}
+                        {/* −1 Day */}
+                        <button
+                            onClick={() => onAdjustDate(task.id, -1)}
+                            title="Move back 1 day"
+                            style={{
+                                background: 'rgba(255,255,255,0.15)', color: isCompleted ? '#94a3b8' : '#fff',
+                                border: '1px solid rgba(255,255,255,0.2)', borderRadius: '6px',
+                                padding: '3px 6px', cursor: 'pointer',
+                                display: 'flex', alignItems: 'center',
+                                fontSize: '11px', fontWeight: 700, lineHeight: 1,
+                            }}
+                        >−</button>
+                        {/* +1 Day */}
+                        <button
+                            onClick={() => onAdjustDate(task.id, +1)}
+                            title="Move forward 1 day"
+                            style={{
+                                background: 'rgba(255,255,255,0.15)', color: isCompleted ? '#94a3b8' : '#fff',
+                                border: '1px solid rgba(255,255,255,0.2)', borderRadius: '6px',
+                                padding: '3px 6px', cursor: 'pointer',
+                                display: 'flex', alignItems: 'center',
+                                fontSize: '11px', fontWeight: 700, lineHeight: 1,
+                            }}
+                        >+</button>
                         <button
                             onClick={() => onEdit(task)}
                             style={{

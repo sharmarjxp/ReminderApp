@@ -320,9 +320,14 @@ export default function Home() {
           .sign-out-label {
             display: none;
           }
-          .controls-bar, .task-list-container {
+          .controls-bar {
             padding-left: 8px;
             padding-right: 8px;
+          }
+          .task-list-container {
+            padding-left: 8px;
+            padding-right: 8px;
+            padding-top: 175px !important; /* Mobile header wraps and is taller */
           }
         }
       `}</style>
@@ -461,7 +466,7 @@ export default function Home() {
         ref={listRef}
         onScroll={handleListScroll}
         style={{
-          paddingTop: '130px',
+          paddingTop: '130px', /* desktop default, overridden by CSS on mobile */
           paddingBottom: '80px',
           overflowY: 'auto',
           height: '100dvh', /* better than 100vh for mobile browsers */

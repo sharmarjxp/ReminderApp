@@ -43,15 +43,13 @@ export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onR
     const isOverdue = task.notified || isTaskOverdue(task);
     const isCompleted = task.completed;
 
-    // Color logic — overdue keeps the teal card, only border + time go red
+    // Color logic — overdue: only time label goes red, everything else stays teal
     const cardBg = isCompleted ? '#f1f5f9' : '#00897B';
-    const cardBorder = isCompleted ? '#cbd5e1' : isOverdue ? '#ef4444' : '#00796B';
+    const cardBorder = isCompleted ? '#cbd5e1' : '#00796B';
     const titleColor = isCompleted ? '#94a3b8' : '#ffffff';
     const timeColor = isOverdue ? '#ef4444' : isCompleted ? '#94a3b8' : '#1e293b';
     const subColor = isCompleted ? '#94a3b8' : 'rgba(255,255,255,0.75)';
-    const cardShadow = isOverdue && !isCompleted
-        ? '0 0 0 1.5px #ef4444, 0 2px 10px rgba(239,68,68,0.15)'
-        : '0 1px 3px rgba(0,0,0,0.06)';
+    const cardShadow = '0 1px 3px rgba(0,0,0,0.06)';
 
     const tomorrow = format(addDays(new Date(), 1), 'MMM d');
 

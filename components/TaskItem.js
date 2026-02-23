@@ -123,9 +123,9 @@ export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onR
                                 title={`Reschedule to ${tomorrow}`}
                                 style={{
                                     display: 'flex', alignItems: 'center', gap: '3px',
-                                    background: 'rgba(220,38,38,0.1)', color: '#dc2626',
-                                    border: '1px solid rgba(220,38,38,0.25)', borderRadius: '6px',
-                                    padding: '3px 6px', fontSize: '10px', fontWeight: 700,
+                                    background: 'rgba(239,68,68,0.08)', color: '#f87171',
+                                    border: '1px solid rgba(239,68,68,0.18)', borderRadius: '6px',
+                                    padding: '3px 6px', fontSize: '10px', fontWeight: 600,
                                     cursor: 'pointer', whiteSpace: 'nowrap',
                                 }}
                             >

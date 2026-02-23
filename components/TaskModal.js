@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Calendar as CalendarIcon, Clock, Type, MessageSquare, Check, RotateCcw } from 'lucide-react';
 import TimePicker from './TimePicker';
-import { format, addDays } from 'date-fns';
+import { format, addDays, subDays } from 'date-fns';
 import { isTaskOverdue } from '../lib/store';
 
 export default function TaskModal({ isOpen, onClose, onSave, taskToEdit, onReschedule }) {
@@ -226,15 +226,39 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit, onResch
 
                     {/* ── Date ── */}
                     <div style={{ borderBottom: '1px solid #e2e8f0' }}>
-                        <label className="modal-section-label" style={{
-                            display: 'flex', alignItems: 'center', gap: '10px',
-                            background: '#f8fafc', padding: '10px 24px',
+                        <div className="modal-section-label" style={{
+                            display: 'flex', alignItems: 'center', gap: '8px',
+                            background: '#f8fafc', padding: '8px 16px 8px 24px',
                             borderBottom: '1px solid #f1f5f9',
                             color: '#64748b', fontSize: '11px', fontWeight: 700,
                             textTransform: 'uppercase', letterSpacing: '0.12em',
                         }}>
-                            <CalendarIcon size={13} color="#0d9488" /> Pick Date
-                        </label>
+                            <CalendarIcon size={13} color="#0d9488" />
+                            <span style={{ flex: 1 }}>Pick Date</span>
+                            {/* ─ Day adjustment buttons ─ */}
+                            <button
+                                onClick={() => setDate(format(subDays(new Date(date + 'T00:00:00'), 1), 'yyyy-MM-dd'))}
+                                title="Go back one day"
+                                style={{
+                                    display: 'flex', alignItems: 'center', gap: '3px',
+                                    background: '#fff', color: '#475569',
+                                    border: '1px solid #e2e8f0', borderRadius: '6px',
+                                    padding: '3px 8px', fontSize: '11px', fontWeight: 700,
+                                    cursor: 'pointer', textTransform: 'none', letterSpacing: 0,
+                                }}
+                            >−1 Day</button>
+                            <button
+                                onClick={() => setDate(format(addDays(new Date(date + 'T00:00:00'), 1), 'yyyy-MM-dd'))}
+                                title="Go forward one day"
+                                style={{
+                                    display: 'flex', alignItems: 'center', gap: '3px',
+                                    background: '#fff', color: '#475569',
+                                    border: '1px solid #e2e8f0', borderRadius: '6px',
+                                    padding: '3px 8px', fontSize: '11px', fontWeight: 700,
+                                    cursor: 'pointer', textTransform: 'none', letterSpacing: 0,
+                                }}
+                            >+1 Day</button>
+                        </div>
                         <input
                             type="date"
                             value={date}
@@ -243,7 +267,7 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit, onResch
                             style={{
                                 width: '100%', boxSizing: 'border-box',
                                 border: 'none', outline: 'none',
-                                padding: '16px 24px', fontSize: '16px',
+                                padding: '14px 24px', fontSize: '16px',
                                 fontWeight: 600, color: '#1e293b',
                                 background: '#fff',
                             }}

@@ -49,8 +49,8 @@ export default function TimePicker({ value, onChange }) {
                 }
                 .tp-hour-btn,
                 .tp-min-btn {
-                    height: 36px !important;
-                    font-size: 13px !important;
+                    height: 32px !important;
+                    font-size: 12px !important;
                 }
                 .tp-ampm-btn {
                     height: 38px !important;
@@ -76,11 +76,11 @@ export default function TimePicker({ value, onChange }) {
                         color: '#94a3b8', textTransform: 'uppercase',
                         letterSpacing: '0.12em', marginBottom: '10px',
                     }}>Hours</label>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '8px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '6px' }}>
                         {hours.map((h) => (
                             <button key={h} onClick={() => handleHourClick(h)}
                                 className="tp-hour-btn"
-                                style={{ ...(selectedHour === h ? onStyle : offStyle), height: '52px', fontSize: '15px' }}>
+                                style={{ ...(selectedHour === h ? onStyle : offStyle), height: '40px', fontSize: '13px' }}>
                                 {h}
                             </button>
                         ))}
@@ -96,11 +96,11 @@ export default function TimePicker({ value, onChange }) {
                     }}>Minutes — presets or type any value</label>
 
                     {/* Preset grid */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '8px', marginBottom: '12px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '6px', marginBottom: '10px' }}>
                         {minutePresets.map((m) => (
                             <button key={m} onClick={() => handlePresetMinute(m)}
                                 className="tp-min-btn"
-                                style={{ ...(selectedMinute === m ? onStyle : offStyle), height: '52px', fontSize: '15px' }}>
+                                style={{ ...(selectedMinute === m ? onStyle : offStyle), height: '40px', fontSize: '13px' }}>
                                 {m.toString().padStart(2, '0')}
                             </button>
                         ))}

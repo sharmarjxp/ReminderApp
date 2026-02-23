@@ -43,12 +43,15 @@ export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onR
     const isOverdue = task.notified || isTaskOverdue(task);
     const isCompleted = task.completed;
 
-    // Color logic
-    const cardBg = isCompleted ? '#f1f5f9' : isOverdue ? '#fef2f2' : '#00897B';
-    const cardBorder = isCompleted ? '#cbd5e1' : isOverdue ? '#fca5a5' : '#00796B';
-    const titleColor = isCompleted ? '#94a3b8' : isOverdue ? '#dc2626' : '#ffffff';
-    const timeColor = isOverdue ? '#dc2626' : isCompleted ? '#94a3b8' : '#1e293b';
-    const subColor = isCompleted ? '#94a3b8' : isOverdue ? '#ef4444' : 'rgba(255,255,255,0.75)';
+    // Color logic — overdue keeps the teal card, only border + time go red
+    const cardBg = isCompleted ? '#f1f5f9' : '#00897B';
+    const cardBorder = isCompleted ? '#cbd5e1' : isOverdue ? '#ef4444' : '#00796B';
+    const titleColor = isCompleted ? '#94a3b8' : '#ffffff';
+    const timeColor = isOverdue ? '#ef4444' : isCompleted ? '#94a3b8' : '#1e293b';
+    const subColor = isCompleted ? '#94a3b8' : 'rgba(255,255,255,0.75)';
+    const cardShadow = isOverdue && !isCompleted
+        ? '0 0 0 1.5px #ef4444, 0 2px 10px rgba(239,68,68,0.15)'
+        : '0 1px 3px rgba(0,0,0,0.06)';
 
     const tomorrow = format(addDays(new Date(), 1), 'MMM d');
 
@@ -94,8 +97,9 @@ export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onR
             {/* Card */}
             <div className="task-card" style={{
                 flex: 1, minWidth: 0, borderRadius: '12px', padding: '11px 13px',
-                background: cardBg, border: `1.5px solid ${cardBorder}`,
-                boxShadow: isOverdue && !isCompleted ? '0 2px 10px rgba(220,38,38,0.12)' : '0 1px 3px rgba(0,0,0,0.06)',
+                background: cardBg,
+                border: `1.5px solid ${cardBorder}`,
+                boxShadow: cardShadow,
                 cursor: 'pointer', transition: 'all 0.15s',
                 display: 'flex', flexDirection: 'column', gap: '5px',
                 overflow: 'hidden',
@@ -133,7 +137,7 @@ export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onR
                         <button
                             onClick={() => onEdit(task)}
                             style={{
-                                background: 'rgba(255,255,255,0.15)', color: isOverdue || isCompleted ? '#64748b' : '#fff',
+                                background: 'rgba(255,255,255,0.15)', color: isCompleted ? '#64748b' : '#fff',
                                 border: '1px solid rgba(255,255,255,0.2)', borderRadius: '6px',
                                 padding: '3px 6px', cursor: 'pointer',
                                 display: 'flex', alignItems: 'center',
@@ -144,7 +148,7 @@ export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onR
                         <button
                             onClick={() => onDelete(task.id)}
                             style={{
-                                background: 'rgba(255,255,255,0.15)', color: isOverdue || isCompleted ? '#64748b' : '#fff',
+                                background: 'rgba(255,255,255,0.15)', color: isCompleted ? '#64748b' : '#fff',
                                 border: '1px solid rgba(255,255,255,0.2)', borderRadius: '6px',
                                 padding: '3px 6px', cursor: 'pointer',
                                 display: 'flex', alignItems: 'center',

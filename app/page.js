@@ -255,7 +255,7 @@ export default function Home() {
         position: 'sticky', top: 0, zIndex: 10,
         background: '#ffffff',
         borderBottom: '1px solid #e2e8f0',
-        boxShadow: '0 1px 8px rgba(0,0,0,0.06)',
+        boxShadow: '0 2px 12px rgba(0,0,0,0.07)',
       }}>
         <div className="nav-inner">
           {/* Brand */}
@@ -299,86 +299,83 @@ export default function Home() {
             </button>
           </div>
         </div>
-      </div>
 
-      {/* ── Controls Bar ── */}
-      <div className="controls-bar" style={{ padding: '20px 0 8px' }}>
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+        {/* ── Controls Bar (sticky with nav) ── */}
+        <div className="controls-bar" style={{ padding: '8px 0 10px', borderTop: '1px solid #f1f5f9' }}>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
 
-          {/* Search */}
-          <input
-            type="text"
-            placeholder="Search reminders..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{
-              flex: 1, minWidth: '150px',
-              background: '#fff', border: '1.5px solid #e2e8f0',
-              borderRadius: '12px', padding: '11px 18px',
-              fontSize: '14px', color: '#1e293b',
-              outline: 'none', boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
-            }}
-            onFocus={e => e.currentTarget.style.borderColor = '#0d9488'}
-            onBlur={e => e.currentTarget.style.borderColor = '#e2e8f0'}
-          />
-
-          {/* Sort Button */}
-          <button
-            onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
-            style={{
-              display: 'flex', alignItems: 'center', gap: '8px',
-              background: '#fff', color: '#475569',
-              border: '1.5px solid #e2e8f0', borderRadius: '12px',
-              padding: '11px 18px', fontSize: '13px', fontWeight: 600,
-              cursor: 'pointer', whiteSpace: 'nowrap',
-              boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
-              transition: 'all 0.15s',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = '#0d9488'; e.currentTarget.style.color = '#0d9488'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#475569'; }}
-          >
-            {sortOrder === 'asc' ? <ArrowUp size={15} /> : <ArrowDown size={15} />}
-            {sortOrder === 'asc' ? 'Oldest First' : 'Newest First'}
-          </button>
-
-          {/* Alerts Button */}
-          <button
-            onClick={requestPermission}
-            style={{
-              display: 'flex', alignItems: 'center', gap: '8px',
-              background: permission === 'granted' ? '#f0fdf4' : '#fff',
-              color: permission === 'granted' ? '#15803d' : '#64748b',
-              border: `1.5px solid ${permission === 'granted' ? '#86efac' : '#e2e8f0'}`,
-              borderRadius: '12px', padding: '11px 18px',
-              fontSize: '13px', fontWeight: 600,
-              cursor: 'pointer', whiteSpace: 'nowrap',
-              boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
-              transition: 'all 0.15s',
-            }}
-          >
-            {permission === 'granted' ? <Bell size={15} /> : <BellOff size={15} />}
-            {permission === 'granted' ? 'Alerts On' : 'Enable Alerts'}
-          </button>
-
-          {/* Auto-Reschedule All — only shows when there are overdue tasks */}
-          {overdueCount > 0 && (
-            <button
-              onClick={() => setIsRescheduleModalOpen(true)}
+            {/* Search */}
+            <input
+              type="text"
+              placeholder="Search reminders..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               style={{
-                display: 'flex', alignItems: 'center', gap: '8px',
-                background: '#fff7ed', color: '#c2410c',
-                border: '1.5px solid #fed7aa', borderRadius: '12px',
-                padding: '11px 18px', fontSize: '13px', fontWeight: 700,
+                flex: 1, minWidth: '120px',
+                background: '#f8fafc', border: '1.5px solid #e2e8f0',
+                borderRadius: '10px', padding: '8px 14px',
+                fontSize: '13px', color: '#1e293b',
+                outline: 'none', boxShadow: 'none',
+              }}
+              onFocus={e => e.currentTarget.style.borderColor = '#0d9488'}
+              onBlur={e => e.currentTarget.style.borderColor = '#e2e8f0'}
+            />
+
+            {/* Sort Button */}
+            <button
+              onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '6px',
+                background: '#f8fafc', color: '#475569',
+                border: '1.5px solid #e2e8f0', borderRadius: '10px',
+                padding: '8px 14px', fontSize: '12px', fontWeight: 600,
                 cursor: 'pointer', whiteSpace: 'nowrap',
-                boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
                 transition: 'all 0.15s',
               }}
-              title={`Reschedule ${overdueCount} overdue reminder(s) to tomorrow`}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = '#0d9488'; e.currentTarget.style.color = '#0d9488'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#475569'; }}
             >
-              <RotateCcw size={15} />
-              Reschedule All ({overdueCount})
+              {sortOrder === 'asc' ? <ArrowUp size={13} /> : <ArrowDown size={13} />}
+              {sortOrder === 'asc' ? 'Oldest' : 'Newest'}
             </button>
-          )}
+
+            {/* Alerts Button */}
+            <button
+              onClick={requestPermission}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '6px',
+                background: permission === 'granted' ? '#f0fdf4' : '#f8fafc',
+                color: permission === 'granted' ? '#15803d' : '#64748b',
+                border: `1.5px solid ${permission === 'granted' ? '#86efac' : '#e2e8f0'}`,
+                borderRadius: '10px', padding: '8px 14px',
+                fontSize: '12px', fontWeight: 600,
+                cursor: 'pointer', whiteSpace: 'nowrap',
+                transition: 'all 0.15s',
+              }}
+            >
+              {permission === 'granted' ? <Bell size={13} /> : <BellOff size={13} />}
+              {permission === 'granted' ? 'Alerts On' : 'Alerts'}
+            </button>
+
+            {/* Auto-Reschedule All */}
+            {overdueCount > 0 && (
+              <button
+                onClick={() => setIsRescheduleModalOpen(true)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '6px',
+                  background: '#fff7ed', color: '#c2410c',
+                  border: '1.5px solid #fed7aa', borderRadius: '10px',
+                  padding: '8px 14px', fontSize: '12px', fontWeight: 700,
+                  cursor: 'pointer', whiteSpace: 'nowrap',
+                  transition: 'all 0.15s',
+                }}
+                title={`Reschedule ${overdueCount} overdue reminder(s) to tomorrow`}
+              >
+                <RotateCcw size={13} />
+                Reschedule ({overdueCount})
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

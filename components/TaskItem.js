@@ -74,10 +74,10 @@ export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onR
                 alignItems: 'flex-end', minWidth: '70px',
                 paddingTop: '8px', flexShrink: 0
             }}>
-                <span style={{ fontSize: '16px', fontWeight: 900, color: timeColor, lineHeight: 1 }}>
+                <span style={{ fontSize: '19px', fontWeight: 900, color: timeColor, lineHeight: 1 }}>
                     {hour}:{displayMinute}
                 </span>
-                <span style={{ fontSize: '10px', fontWeight: 700, color: timeColor, textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '1px' }}>
+                <span style={{ fontSize: '12px', fontWeight: 700, color: timeColor, textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '1px' }}>
                     {ampm}
                 </span>
                 {isOverdue && !isCompleted && (
@@ -174,7 +174,7 @@ export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onR
                 {/* Footer */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '1px' }}>
                     <CalendarClock size={10} color={subColor} />
-                    <span style={{ fontSize: '10px', fontWeight: 600, color: subColor }}>
+                    <span style={{ fontSize: '12px', fontWeight: 600, color: subColor }}>
                         {task.date}
                     </span>
                     {isCompleted && (

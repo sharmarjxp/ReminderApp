@@ -104,82 +104,80 @@ export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onR
             }}
                 onClick={() => onEdit(task)}
             >
-                {/* Title row */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '6px' }}>
-                    <h3 className="task-title" style={{
-                        fontSize: '20px', fontWeight: 500, color: titleColor,
-                        textDecoration: isCompleted ? 'line-through' : 'none',
-                        margin: 0, lineHeight: 1.15,
-                        wordBreak: 'break-word', overflowWrap: 'anywhere',
-                    }}>
-                        {task.title}
-                    </h3>
-
-                    {/* Action buttons */}
-                    <div style={{ display: 'flex', gap: '3px', flexShrink: 0 }} onClick={e => e.stopPropagation()}>
-                        {isOverdue && !isCompleted && (
-                            <button
-                                onClick={() => onReschedule(task.id)}
-                                title="Reschedule (today if time is future, else tomorrow)"
-                                style={{
-                                    display: 'flex', alignItems: 'center', gap: '3px',
-                                    background: 'rgba(239,68,68,0.08)', color: '#f87171',
-                                    border: '1px solid rgba(239,68,68,0.18)', borderRadius: '6px',
-                                    padding: '3px 6px', fontSize: '10px', fontWeight: 600,
-                                    cursor: 'pointer', whiteSpace: 'nowrap',
-                                }}
-                            >
-                                <RotateCcw size={10} /> Reschedule
-                            </button>
-                        )}
-                        {/* −1 Day */}
+                {/* Buttons row — above the title so title gets full width */}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '3px' }} onClick={e => e.stopPropagation()}>
+                    {isOverdue && !isCompleted && (
                         <button
-                            onClick={() => onAdjustDate(task.id, -1)}
-                            title="Move back 1 day"
+                            onClick={() => onReschedule(task.id)}
+                            title="Reschedule (today if time is future, else tomorrow)"
                             style={{
-                                background: 'rgba(255,255,255,0.15)', color: isCompleted ? '#94a3b8' : '#fff',
-                                border: '1px solid rgba(255,255,255,0.2)', borderRadius: '6px',
-                                padding: '3px 6px', cursor: 'pointer',
-                                display: 'flex', alignItems: 'center',
-                                fontSize: '11px', fontWeight: 700, lineHeight: 1,
-                            }}
-                        >−</button>
-                        {/* +1 Day */}
-                        <button
-                            onClick={() => onAdjustDate(task.id, +1)}
-                            title="Move forward 1 day"
-                            style={{
-                                background: 'rgba(255,255,255,0.15)', color: isCompleted ? '#94a3b8' : '#fff',
-                                border: '1px solid rgba(255,255,255,0.2)', borderRadius: '6px',
-                                padding: '3px 6px', cursor: 'pointer',
-                                display: 'flex', alignItems: 'center',
-                                fontSize: '11px', fontWeight: 700, lineHeight: 1,
-                            }}
-                        >+</button>
-                        <button
-                            onClick={() => onEdit(task)}
-                            style={{
-                                background: 'rgba(255,255,255,0.15)', color: isCompleted ? '#64748b' : '#fff',
-                                border: '1px solid rgba(255,255,255,0.2)', borderRadius: '6px',
-                                padding: '3px 6px', cursor: 'pointer',
-                                display: 'flex', alignItems: 'center',
+                                display: 'flex', alignItems: 'center', gap: '3px',
+                                background: 'rgba(239,68,68,0.08)', color: '#f87171',
+                                border: '1px solid rgba(239,68,68,0.18)', borderRadius: '6px',
+                                padding: '3px 6px', fontSize: '10px', fontWeight: 600,
+                                cursor: 'pointer', whiteSpace: 'nowrap',
                             }}
                         >
-                            <Edit2 size={11} />
+                            <RotateCcw size={10} /> Reschedule
                         </button>
-                        <button
-                            onClick={() => onDelete(task.id)}
-                            style={{
-                                background: 'rgba(255,255,255,0.15)', color: isCompleted ? '#64748b' : '#fff',
-                                border: '1px solid rgba(255,255,255,0.2)', borderRadius: '6px',
-                                padding: '3px 6px', cursor: 'pointer',
-                                display: 'flex', alignItems: 'center',
-                            }}
-                        >
-                            <Trash2 size={11} />
-                        </button>
-                    </div>
+                    )}
+                    {/* −1 Day */}
+                    <button
+                        onClick={() => onAdjustDate(task.id, -1)}
+                        title="Move back 1 day"
+                        style={{
+                            background: 'rgba(255,255,255,0.15)', color: isCompleted ? '#94a3b8' : '#fff',
+                            border: '1px solid rgba(255,255,255,0.2)', borderRadius: '6px',
+                            padding: '3px 7px', cursor: 'pointer',
+                            display: 'flex', alignItems: 'center',
+                            fontSize: '11px', fontWeight: 700, lineHeight: 1,
+                        }}
+                    >−</button>
+                    {/* +1 Day */}
+                    <button
+                        onClick={() => onAdjustDate(task.id, +1)}
+                        title="Move forward 1 day"
+                        style={{
+                            background: 'rgba(255,255,255,0.15)', color: isCompleted ? '#94a3b8' : '#fff',
+                            border: '1px solid rgba(255,255,255,0.2)', borderRadius: '6px',
+                            padding: '3px 7px', cursor: 'pointer',
+                            display: 'flex', alignItems: 'center',
+                            fontSize: '11px', fontWeight: 700, lineHeight: 1,
+                        }}
+                    >+</button>
+                    <button
+                        onClick={() => onEdit(task)}
+                        style={{
+                            background: 'rgba(255,255,255,0.15)', color: isCompleted ? '#64748b' : '#fff',
+                            border: '1px solid rgba(255,255,255,0.2)', borderRadius: '6px',
+                            padding: '3px 6px', cursor: 'pointer',
+                            display: 'flex', alignItems: 'center',
+                        }}
+                    >
+                        <Edit2 size={11} />
+                    </button>
+                    <button
+                        onClick={() => onDelete(task.id)}
+                        style={{
+                            background: 'rgba(255,255,255,0.15)', color: isCompleted ? '#64748b' : '#fff',
+                            border: '1px solid rgba(255,255,255,0.2)', borderRadius: '6px',
+                            padding: '3px 6px', cursor: 'pointer',
+                            display: 'flex', alignItems: 'center',
+                        }}
+                    >
+                        <Trash2 size={11} />
+                    </button>
                 </div>
+
+                {/* Title — full width now that buttons are above */}
+                <h3 className="task-title" style={{
+                    fontSize: '20px', fontWeight: 500, color: titleColor,
+                    textDecoration: isCompleted ? 'line-through' : 'none',
+                    margin: 0, lineHeight: 1.15,
+                    wordBreak: 'break-word', overflowWrap: 'anywhere',
+                }} onClick={() => onEdit(task)}>
+                    {task.title}
+                </h3>
 
                 {/* Message */}
                 {task.message && (

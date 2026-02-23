@@ -174,7 +174,7 @@ export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onR
                 {/* Footer */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '1px' }}>
                     <CalendarClock size={10} color={subColor} />
-                    <span style={{ fontSize: '12px', fontWeight: 600, color: subColor }}>
+                    <span style={{ fontSize: '10px', fontWeight: 600, color: subColor }}>
                         {task.date}
                     </span>
                     {isCompleted && (

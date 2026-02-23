@@ -172,7 +172,7 @@ export default function Home() {
   return (
     <main style={{
       minHeight: '100vh', background: '#f8fafc',
-      fontFamily: 'system-ui, sans-serif', overflowX: 'hidden'
+      fontFamily: 'system-ui, sans-serif',
     }}>
 
       {/* ── Top Nav Bar ── */}
@@ -180,7 +180,7 @@ export default function Home() {
         .nav-inner {
           max-width: 900px;
           margin: 0 auto;
-          padding: 16px 32px;
+          padding: 8px 32px 4px;
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -252,7 +252,7 @@ export default function Home() {
         }
       `}</style>
       <div style={{
-        position: 'sticky', top: 0, zIndex: 10,
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
         background: '#ffffff',
         borderBottom: '1px solid #e2e8f0',
         boxShadow: '0 2px 12px rgba(0,0,0,0.07)',
@@ -301,7 +301,7 @@ export default function Home() {
         </div>
 
         {/* ── Controls Bar (sticky with nav) ── */}
-        <div className="controls-bar" style={{ padding: '8px 0 10px', borderTop: '1px solid #f1f5f9' }}>
+        <div className="controls-bar" style={{ padding: '2px 0 6px', borderTop: '1px solid #f1f5f9' }}>
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
 
             {/* Search */}
@@ -380,7 +380,7 @@ export default function Home() {
       </div>
 
       {/* ── Task List ── */}
-      <div className="task-list-container" style={{ padding: '16px 0 80px' }}>
+      <div className="task-list-container" style={{ padding: '130px 0 80px' }}>
         {Object.entries(groupedTasks).map(([dateLabel, tasks]) => (
           <section key={dateLabel} style={{ marginBottom: '28px' }}>
             <h2 style={{

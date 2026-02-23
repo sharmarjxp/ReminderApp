@@ -25,6 +25,10 @@ export default function Home() {
 
   const [loading, setLoading] = useState(true);
 
+  // Header hide-on-scroll and scroll persistence
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const lastScrollY = useRef(0);
+
   const { permission, requestPermission, triggerNotification } = useNotifications();
 
   // Load tasks on mount — only when logged in
@@ -176,6 +180,51 @@ export default function Home() {
     overscan: 8,
   });
 
+  // Restore scroll position when tasks finish loading
+  useEffect(() => {
+    if (loading) return;
+
+    const savedScroll = sessionStorage.getItem('pi-reminder-scroll');
+    if (savedScroll && listRef.current) {
+      // Restore scroll a short tick after render
+      setTimeout(() => {
+        if (listRef.current) listRef.current.scrollTop = parseInt(savedScroll, 10);
+      }, 50);
+    }
+  }, [loading]);
+
+  const handleListScroll = (e) => {
+    // Only save scroll if tab is active and it's a real scroll (not 0 artificially)
+    if (document.visibilityState !== 'visible' || e.target.clientHeight === 0) return;
+
+    const currentScrollY = e.target.scrollTop;
+
+    // Completely ignore absolute 0 if we were scrolled down
+    // (A common bug in mobile Chrome when switching tabs is it fires a scroll to 0)
+    if (currentScrollY === 0 && lastScrollY.current > 50) {
+      if (listRef.current) listRef.current.scrollTop = lastScrollY.current;
+      return;
+    }
+
+    // 1. Save scroll position
+    sessionStorage.setItem('pi-reminder-scroll', currentScrollY);
+
+    // 2. Determine scroll direction to show/hide header
+    if (currentScrollY > lastScrollY.current + 15) {
+      // scrolling down
+      if (isHeaderVisible && currentScrollY > 100) {
+        setIsHeaderVisible(false);
+      }
+    } else if (currentScrollY < lastScrollY.current - 15) {
+      // scrolling up
+      if (!isHeaderVisible) {
+        setIsHeaderVisible(true);
+      }
+    }
+
+    lastScrollY.current = currentScrollY;
+  };
+
   // ── Auth renders (after all hooks) ────────────────────────────
   if (session === undefined) {
     return (
@@ -278,10 +327,11 @@ export default function Home() {
         }
       `}</style>
       <div style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
+        position: 'fixed', top: isHeaderVisible ? 0 : '-150px', left: 0, right: 0, zIndex: 100,
         background: '#ffffff',
         borderBottom: '1px solid #e2e8f0',
         boxShadow: '0 2px 12px rgba(0,0,0,0.07)',
+        transition: 'top 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
       }}>
         <div className="nav-inner">
           {/* Brand */}
@@ -409,11 +459,12 @@ export default function Home() {
       <div
         className="task-list-container"
         ref={listRef}
+        onScroll={handleListScroll}
         style={{
           paddingTop: '130px',
           paddingBottom: '80px',
           overflowY: 'auto',
-          height: '100vh',
+          height: '100dvh', /* better than 100vh for mobile browsers */
           position: 'relative',
         }}
       >

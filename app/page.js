@@ -20,7 +20,7 @@ export default function Home() {
   const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortOrder, setSortOrder] = useState('asc');
+  const [sortOrder, setSortOrder] = useState('desc');
 
   const [loading, setLoading] = useState(true);
 

@@ -384,7 +384,7 @@ export default function Home() {
         {Object.entries(groupedTasks).map(([dateLabel, tasks]) => (
           <section key={dateLabel} style={{ marginBottom: '28px' }}>
             <h2 style={{
-              fontSize: '15px', fontWeight: 800, color: '#2563eb',
+              fontSize: '15px', fontWeight: 500, color: '#2563eb',
               textTransform: 'uppercase', letterSpacing: '0.1em',
               marginBottom: '12px', paddingLeft: '4px',
             }}>

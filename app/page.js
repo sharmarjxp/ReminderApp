@@ -9,7 +9,7 @@ import RescheduleRangeModal from '../components/RescheduleRangeModal';
 import LoginPage from '../components/LoginPage';
 import TaskItem from '../components/TaskItem';
 import { useAuth } from '../components/AuthProvider';
-import { getTasks, addTask, updateTask, deleteTask, rescheduleToNextDay, rescheduleAllOverdue, rescheduleByDateRange, adjustTaskDate, isTaskOverdue } from '../lib/store';
+import { getTasks, addTask, updateTask, deleteTask, rescheduleToNextDay, rescheduleAllOverdue, rescheduleByDateRange, adjustTaskDate, isTaskOverdue, rescheduleTasksByIds } from '../lib/store';
 import useNotifications from '../hooks/useNotifications';
 import { format, isToday, isTomorrow, parseISO, addDays } from 'date-fns';
 import { cn } from '../lib/utils';
@@ -109,6 +109,18 @@ export default function Home() {
     setTasks(updated);
   };
 
+  // Reschedule a group of tasks (e.g. from a specific date)
+  const handleRescheduleGroup = async (groupTasks) => {
+    const overdueOnes = groupTasks.filter(t => !t.completed && (t.notified || isTaskOverdue(t)));
+    if (overdueOnes.length === 0) return;
+
+    if (!confirm(`Reschedule ${overdueOnes.length} passed/notified tasks to tomorrow?`)) return;
+
+    const ids = overdueOnes.map(t => t.id);
+    const updated = await rescheduleTasksByIds(ids);
+    setTasks(updated);
+  };
+
   // Adjust a single task's date by ±N days
   const handleAdjustDate = async (id, delta) => {
     const updated = await adjustTaskDate(id, delta);
@@ -149,10 +161,13 @@ export default function Home() {
   // Group tasks by date
   const groupedTasks = useMemo(() => {
     const groups = {};
+    const todayStr = format(new Date(), 'yyyy-MM-dd');
+    const tomorrowStr = format(addDays(new Date(), 1), 'yyyy-MM-dd');
+
     filteredTasks.forEach(task => {
       let label = task.date;
-      if (isToday(parseISO(task.date))) label = 'TODAY';
-      else if (isTomorrow(parseISO(task.date))) label = 'TOMORROW';
+      if (task.date === todayStr) label = 'TODAY';
+      else if (task.date === tomorrowStr) label = 'TOMORROW';
       else label = format(parseISO(task.date), 'MMM d').toUpperCase();
 
       if (!groups[label]) groups[label] = [];
@@ -165,11 +180,26 @@ export default function Home() {
   const virtualRows = useMemo(() => {
     const rows = [];
     Object.entries(groupedTasks).forEach(([label, tasksInGroup]) => {
-      rows.push({ type: 'header', label, count: tasksInGroup.length });
+      rows.push({ type: 'header', label, count: tasksInGroup.length, tasks: tasksInGroup });
       tasksInGroup.forEach(task => rows.push({ type: 'card', task }));
     });
     return rows;
   }, [groupedTasks]);
+
+  const scrollToToday = () => {
+    let targetIndex = virtualRows.findIndex(r => r.type === 'header' && r.label === 'TODAY');
+
+    // Fallback: if no today section, try tomorrow
+    if (targetIndex === -1) {
+      targetIndex = virtualRows.findIndex(r => r.type === 'header' && r.label === 'TOMORROW');
+    }
+
+    if (targetIndex !== -1) {
+      virtualizer.scrollToIndex(targetIndex, { align: 'start', behavior: 'smooth' });
+    } else {
+      console.log('No reminders found for today or tomorrow.');
+    }
+  };
 
   // Virtualizer — must be declared before any early returns (Rules of Hooks)
   const listRef = useRef(null);
@@ -519,22 +549,46 @@ export default function Home() {
                   }}
                 >
                   {row.type === 'header' ? (
-                    <h2 style={{
-                      fontSize: '15px', fontWeight: 500, color: '#2563eb',
-                      textTransform: 'uppercase', letterSpacing: '0.1em',
-                      margin: '0 0 2px', paddingLeft: '4px',
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
                       paddingTop: vItem.index === 0 ? '0' : '18px',
-                      display: 'flex', alignItems: 'center', gap: '8px',
+                      paddingBottom: '4px'
                     }}>
-                      {row.label}
-                      <span style={{
-                        fontSize: '12px', fontWeight: 600,
-                        background: '#eff6ff', color: '#3b82f6',
-                        border: '1px solid #bfdbfe',
-                        borderRadius: '20px', padding: '1px 8px',
-                        letterSpacing: '0.04em', textTransform: 'none',
-                      }}>{row.count}</span>
-                    </h2>
+                      <h2 style={{
+                        fontSize: '15px', fontWeight: 500, color: '#2563eb',
+                        textTransform: 'uppercase', letterSpacing: '0.1em',
+                        margin: 0, paddingLeft: '4px',
+                        display: 'flex', alignItems: 'center', gap: '8px',
+                      }}>
+                        {row.label}
+                        <span style={{
+                          fontSize: '12px', fontWeight: 600,
+                          background: '#eff6ff', color: '#3b82f6',
+                          border: '1px solid #bfdbfe',
+                          borderRadius: '20px', padding: '1px 8px',
+                          letterSpacing: '0.04em', textTransform: 'none',
+                        }}>{row.count}</span>
+                      </h2>
+
+                      {row.tasks.some(t => !t.completed && (t.notified || isTaskOverdue(t))) && (
+                        <button
+                          onClick={() => handleRescheduleGroup(row.tasks)}
+                          style={{
+                            fontSize: '11px', fontWeight: 700,
+                            background: '#fff7ed', color: '#c2410c',
+                            border: '1.5px solid #fed7aa', borderRadius: '8px',
+                            padding: '4px 10px', cursor: 'pointer',
+                            transition: 'all 0.15s',
+                          }}
+                          onMouseEnter={e => { e.currentTarget.style.background = '#ffedd5'; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = '#fff7ed'; }}
+                        >
+                          Reschedule All
+                        </button>
+                      )}
+                    </div>
                   ) : (
                     <TaskItem
                       task={row.task}
@@ -565,6 +619,37 @@ export default function Home() {
         onSubmit={handleRescheduleByRange}
         overdueCount={overdueCount}
       />
+
+      {/* ── Today Floating Button ── */}
+      <button
+        onClick={scrollToToday}
+        style={{
+          position: 'fixed',
+          right: '24px',
+          top: '55%',
+          transform: 'translateY(-50%)',
+          zIndex: 90,
+          width: '60px',
+          height: '60px',
+          borderRadius: '50%',
+          background: '#0d9488',
+          color: 'white',
+          border: 'none',
+          boxShadow: '0 4px 20px rgba(13,148,136,0.5)',
+          cursor: 'pointer',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+        }}
+        onMouseEnter={e => { e.currentTarget.style.scale = '1.1'; e.currentTarget.style.background = '#0f766e'; }}
+        onMouseLeave={e => { e.currentTarget.style.scale = '1'; e.currentTarget.style.background = '#0d9488'; }}
+        title="Scroll to Today"
+      >
+        <span style={{ fontSize: '13px', fontWeight: 900, textTransform: 'uppercase' }}>Today</span>
+      </button>
+
     </main>
   );
 }

@@ -137,8 +137,12 @@ export default function Home() {
 
 
   const filteredTasks = useMemo(() => {
+    const s = searchTerm.toLowerCase();
     return tasks
-      .filter(t => t.title.toLowerCase().includes(searchTerm.toLowerCase()))
+      .filter(t =>
+        t.title.toLowerCase().includes(s) ||
+        (t.message && t.message.toLowerCase().includes(s))
+      )
       .sort((a, b) => {
         // Sort by date then time
         const dateCompare = sortOrder === 'asc'

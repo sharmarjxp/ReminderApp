@@ -185,7 +185,9 @@ export default function Home() {
     const rows = [];
     Object.entries(groupedTasks).forEach(([label, tasksInGroup]) => {
       rows.push({ type: 'header', label, count: tasksInGroup.length, tasks: tasksInGroup });
-      tasksInGroup.forEach(task => rows.push({ type: 'card', task }));
+      tasksInGroup.forEach((task, idx) =>
+        rows.push({ type: 'card', task, positionInGroup: idx + 1, groupTotal: tasksInGroup.length })
+      );
     });
     return rows;
   }, [groupedTasks]);
@@ -596,6 +598,8 @@ export default function Home() {
                   ) : (
                     <TaskItem
                       task={row.task}
+                      positionInGroup={row.positionInGroup}
+                      groupTotal={row.groupTotal}
                       onEdit={(t) => { setEditingTask(t); setIsModalOpen(true); }}
                       onDelete={handleDeleteTask}
                       onToggleComplete={toggleComplete}

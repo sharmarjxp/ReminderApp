@@ -35,7 +35,7 @@ function renderMessage(text, subColor) {
     });
 }
 
-export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onReschedule, onAdjustDate }) {
+export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onReschedule, onAdjustDate, positionInGroup, groupTotal }) {
     const { hour, minute, ampm } = task.time;
     const displayMinute = (minute === 60 ? 0 : minute).toString().padStart(2, '0');
     const timeStr = `${hour}:${displayMinute} ${ampm}`;
@@ -133,7 +133,22 @@ export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onR
                 onClick={() => onEdit(task)}
             >
                 {/* Buttons row — above the title so title gets full width */}
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '3px' }} onClick={e => e.stopPropagation()}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '3px', alignItems: 'center' }} onClick={e => e.stopPropagation()}>
+                    {positionInGroup != null && (
+                        <span style={{
+                            fontSize: '11px', fontWeight: 700, lineHeight: 1,
+                            color: isCompleted ? '#94a3b8' : 'rgba(255,255,255,0.55)',
+                            padding: '3px 6px',
+                            border: '1px solid rgba(255,255,255,0.18)',
+                            borderRadius: '6px',
+                            background: 'rgba(255,255,255,0.08)',
+                            minWidth: '24px',
+                            textAlign: 'center',
+                            letterSpacing: 0,
+                        }}>
+                            {positionInGroup}
+                        </span>
+                    )}
                     {isOverdue && !isCompleted && (
                         <button
                             onClick={() => onReschedule(task.id)}

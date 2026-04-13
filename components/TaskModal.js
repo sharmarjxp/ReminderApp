@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Calendar as CalendarIcon, Clock, Type, MessageSquare, Check, RotateCcw } from 'lucide-react';
 import TimePicker from './TimePicker';
-import { format, addDays, subDays } from 'date-fns';
+import { format, addDays, addWeeks, addMonths, subDays } from 'date-fns';
 import { isTaskOverdue } from '../lib/store';
 
 export default function TaskModal({ isOpen, onClose, onSave, taskToEdit, onReschedule }) {
@@ -12,6 +12,12 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit, onResch
     const [message, setMessage] = useState('');
     const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
     const [time, setTime] = useState({ hour: 12, minute: 0, ampm: 'PM' });
+    const [pressedBtn, setPressedBtn] = useState(null);
+    const flash = (key, fn) => {
+        setPressedBtn(key);
+        fn();
+        setTimeout(() => setPressedBtn(null), 250);
+    };
 
     useEffect(() => {
         if (taskToEdit) {
@@ -122,6 +128,30 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit, onResch
                         padding: 9px 12px !important;
                         font-size: 11px !important;
                     }
+                }
+                .modal-adj-btn {
+                    display: flex;
+                    align-items: center;
+                    gap: 3px;
+                    background: #fff;
+                    color: #475569;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 6px;
+                    padding: 3px 8px;
+                    font-size: 11px;
+                    font-weight: 700;
+                    cursor: pointer;
+                    text-transform: none;
+                    letter-spacing: 0;
+                    user-select: none;
+                }
+                @keyframes modal-flash {
+                    0%   { background: #0d9488; color: #fff; transform: scale(0.86); box-shadow: 0 0 0 3px rgba(13,148,136,0.35); }
+                    55%  { background: #e6f7f5; color: #0d9488; transform: scale(0.95); box-shadow: none; }
+                    100% { background: #fff;    color: #475569; transform: scale(1);    box-shadow: none; }
+                }
+                .modal-adj-btn.modal-pressed {
+                    animation: modal-flash 0.25s ease-out forwards;
                 }
             `}</style>
 
@@ -237,27 +267,35 @@ export default function TaskModal({ isOpen, onClose, onSave, taskToEdit, onResch
                             <span style={{ flex: 1 }}>Pick Date</span>
                             {/* ─ Day adjustment buttons ─ */}
                             <button
-                                onClick={() => setDate(format(subDays(new Date(date + 'T00:00:00'), 1), 'yyyy-MM-dd'))}
+                                onClick={() => flash('d-', () => setDate(format(subDays(new Date(date + 'T00:00:00'), 1), 'yyyy-MM-dd')))}
                                 title="Go back one day"
-                                style={{
-                                    display: 'flex', alignItems: 'center', gap: '3px',
-                                    background: '#fff', color: '#475569',
-                                    border: '1px solid #e2e8f0', borderRadius: '6px',
-                                    padding: '3px 8px', fontSize: '11px', fontWeight: 700,
-                                    cursor: 'pointer', textTransform: 'none', letterSpacing: 0,
-                                }}
-                            >−1 Day</button>
+                                className={`modal-adj-btn${pressedBtn === 'd-' ? ' modal-pressed' : ''}`}
+                            >−1d</button>
                             <button
-                                onClick={() => setDate(format(addDays(new Date(date + 'T00:00:00'), 1), 'yyyy-MM-dd'))}
+                                onClick={() => flash('d+', () => setDate(format(addDays(new Date(date + 'T00:00:00'), 1), 'yyyy-MM-dd')))}
                                 title="Go forward one day"
-                                style={{
-                                    display: 'flex', alignItems: 'center', gap: '3px',
-                                    background: '#fff', color: '#475569',
-                                    border: '1px solid #e2e8f0', borderRadius: '6px',
-                                    padding: '3px 8px', fontSize: '11px', fontWeight: 700,
-                                    cursor: 'pointer', textTransform: 'none', letterSpacing: 0,
-                                }}
-                            >+1 Day</button>
+                                className={`modal-adj-btn${pressedBtn === 'd+' ? ' modal-pressed' : ''}`}
+                            >+1d</button>
+                            <button
+                                onClick={() => flash('w-', () => setDate(format(addWeeks(new Date(date + 'T00:00:00'), -1), 'yyyy-MM-dd')))}
+                                title="Go back one week"
+                                className={`modal-adj-btn${pressedBtn === 'w-' ? ' modal-pressed' : ''}`}
+                            >−W</button>
+                            <button
+                                onClick={() => flash('w+', () => setDate(format(addWeeks(new Date(date + 'T00:00:00'), 1), 'yyyy-MM-dd')))}
+                                title="Go forward one week"
+                                className={`modal-adj-btn${pressedBtn === 'w+' ? ' modal-pressed' : ''}`}
+                            >+W</button>
+                            <button
+                                onClick={() => flash('m-', () => setDate(format(addMonths(new Date(date + 'T00:00:00'), -1), 'yyyy-MM-dd')))}
+                                title="Go back one month"
+                                className={`modal-adj-btn${pressedBtn === 'm-' ? ' modal-pressed' : ''}`}
+                            >−M</button>
+                            <button
+                                onClick={() => flash('m+', () => setDate(format(addMonths(new Date(date + 'T00:00:00'), 1), 'yyyy-MM-dd')))}
+                                title="Go forward one month"
+                                className={`modal-adj-btn${pressedBtn === 'm+' ? ' modal-pressed' : ''}`}
+                            >+M</button>
                         </div>
                         <input
                             type="date"

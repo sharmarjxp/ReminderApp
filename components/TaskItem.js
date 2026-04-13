@@ -1,10 +1,10 @@
 
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Edit2, Trash2, RotateCcw, CalendarClock } from 'lucide-react';
 import { isTaskOverdue } from '../lib/store';
-import { format, addDays } from 'date-fns';
+import { format, addDays, addWeeks, addMonths } from 'date-fns';
 
 // Splits text into plain strings and URL <a> tags
 const URL_REGEX = /(https?:\/\/[^\s]+)/g;
@@ -43,6 +43,13 @@ export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onR
     const isOverdue = task.notified || isTaskOverdue(task);
     const isCompleted = task.completed;
 
+    const [pressedBtn, setPressedBtn] = useState(null);
+    const flash = (key, fn) => {
+        setPressedBtn(key);
+        fn();
+        setTimeout(() => setPressedBtn(null), 250);
+    };
+
     // Color logic — overdue: only time label goes red, everything else stays teal
     const cardBg = isCompleted ? '#f1f5f9' : '#00897B';
     const cardBorder = isCompleted ? '#cbd5e1' : '#00796B';
@@ -60,11 +67,32 @@ export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onR
             boxSizing: 'border-box'
         }}>
             <style>{`
+                @keyframes adj-flash {
+                    0%   { background: rgba(255,255,255,0.78); transform: scale(0.86); box-shadow: 0 0 0 3px rgba(255,255,255,0.45); }
+                    55%  { background: rgba(255,255,255,0.28); transform: scale(0.94); box-shadow: none; }
+                    100% { background: rgba(255,255,255,0.15); transform: scale(1);    box-shadow: none; }
+                }
                 @media (max-width: 480px) {
                     .time-column { min-width: 58px !important; }
                     .task-card { padding: 10px 12px !important; gap: 4px !important; }
                     .task-title { font-size: 17px !important; }
                     .task-message { font-size: 11.5px !important; line-height: 1.4 !important; }
+                }
+                .adj-btn {
+                    background: rgba(255,255,255,0.15);
+                    border: 1px solid rgba(255,255,255,0.2);
+                    border-radius: 6px;
+                    padding: 3px 7px;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    font-size: 11px;
+                    font-weight: 700;
+                    line-height: 1;
+                    user-select: none;
+                }
+                .adj-btn.pressed {
+                    animation: adj-flash 0.25s ease-out forwards;
                 }
             `}</style>
 
@@ -123,28 +151,62 @@ export default function TaskItem({ task, onEdit, onDelete, onToggleComplete, onR
                     )}
                     {/* −1 Day */}
                     <button
-                        onClick={() => onAdjustDate(task.id, -1)}
+                        onClick={() => flash('d-', () => onAdjustDate(task.id, -1))}
                         title="Move back 1 day"
-                        style={{
-                            background: 'rgba(255,255,255,0.15)', color: isCompleted ? '#94a3b8' : '#fff',
-                            border: '1px solid rgba(255,255,255,0.2)', borderRadius: '6px',
-                            padding: '3px 7px', cursor: 'pointer',
-                            display: 'flex', alignItems: 'center',
-                            fontSize: '11px', fontWeight: 700, lineHeight: 1,
-                        }}
+                        className={`adj-btn${pressedBtn === 'd-' ? ' pressed' : ''}`}
+                        style={{ color: isCompleted ? '#94a3b8' : '#fff' }}
                     >−</button>
                     {/* +1 Day */}
                     <button
-                        onClick={() => onAdjustDate(task.id, +1)}
+                        onClick={() => flash('d+', () => onAdjustDate(task.id, +1))}
                         title="Move forward 1 day"
-                        style={{
-                            background: 'rgba(255,255,255,0.15)', color: isCompleted ? '#94a3b8' : '#fff',
-                            border: '1px solid rgba(255,255,255,0.2)', borderRadius: '6px',
-                            padding: '3px 7px', cursor: 'pointer',
-                            display: 'flex', alignItems: 'center',
-                            fontSize: '11px', fontWeight: 700, lineHeight: 1,
-                        }}
+                        className={`adj-btn${pressedBtn === 'd+' ? ' pressed' : ''}`}
+                        style={{ color: isCompleted ? '#94a3b8' : '#fff' }}
                     >+</button>
+                    {/* −1 Week */}
+                    <button
+                        onClick={() => flash('w-', () => {
+                            const cur = new Date(task.date + 'T00:00:00');
+                            const next = format(addWeeks(cur, -1), 'yyyy-MM-dd');
+                            onAdjustDate(task.id, Math.round((new Date(next) - cur) / 86400000));
+                        })}
+                        title="Move back 1 week"
+                        className={`adj-btn${pressedBtn === 'w-' ? ' pressed' : ''}`}
+                        style={{ color: isCompleted ? '#94a3b8' : 'rgba(255,255,255,0.85)' }}
+                    >−W</button>
+                    {/* +1 Week */}
+                    <button
+                        onClick={() => flash('w+', () => {
+                            const cur = new Date(task.date + 'T00:00:00');
+                            const next = format(addWeeks(cur, 1), 'yyyy-MM-dd');
+                            onAdjustDate(task.id, Math.round((new Date(next) - cur) / 86400000));
+                        })}
+                        title="Move forward 1 week"
+                        className={`adj-btn${pressedBtn === 'w+' ? ' pressed' : ''}`}
+                        style={{ color: isCompleted ? '#94a3b8' : 'rgba(255,255,255,0.85)' }}
+                    >+W</button>
+                    {/* −1 Month */}
+                    <button
+                        onClick={() => flash('m-', () => {
+                            const cur = new Date(task.date + 'T00:00:00');
+                            const next = format(addMonths(cur, -1), 'yyyy-MM-dd');
+                            onAdjustDate(task.id, Math.round((new Date(next) - cur) / 86400000));
+                        })}
+                        title="Move back 1 month"
+                        className={`adj-btn${pressedBtn === 'm-' ? ' pressed' : ''}`}
+                        style={{ color: isCompleted ? '#94a3b8' : 'rgba(255,255,255,0.7)' }}
+                    >−M</button>
+                    {/* +1 Month */}
+                    <button
+                        onClick={() => flash('m+', () => {
+                            const cur = new Date(task.date + 'T00:00:00');
+                            const next = format(addMonths(cur, 1), 'yyyy-MM-dd');
+                            onAdjustDate(task.id, Math.round((new Date(next) - cur) / 86400000));
+                        })}
+                        title="Move forward 1 month"
+                        className={`adj-btn${pressedBtn === 'm+' ? ' pressed' : ''}`}
+                        style={{ color: isCompleted ? '#94a3b8' : 'rgba(255,255,255,0.7)' }}
+                    >+M</button>
                     <button
                         onClick={() => onEdit(task)}
                         style={{
